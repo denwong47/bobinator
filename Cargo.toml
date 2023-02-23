@@ -12,6 +12,8 @@ name = "bobinator"
 name = "bobinator"
 
 [dependencies]
+bobinator_models = { path = "./bobinator_models" }
+bobinator_macros = { path = "./bobinator_macros" }
 conch = { git = "https://github.com/denwong47/conch", branch = "development" }
 chrono = { version = "0" }
 enum_index = { git = "https://github.com/denwong47/enum_index", branch = "development" }

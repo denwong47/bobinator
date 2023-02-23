@@ -8,6 +8,8 @@ use serde_json;
 use conch;
 use conch::StringWrapper;
 
+use bobinator_macros::{deserialize_num_field, deserialize_str_field};
+
 use crate::*;
 /// Parse data returned from POST /api/login endpoint.
 ///
@@ -60,60 +62,21 @@ impl<'de> Deserialize<'de> for Employee {
     {
         let mapping: HashMap<&str, serde_json::Value> = HashMap::deserialize(deserializer)?;
 
-        // Deserialise Value::Number.
-        macro_rules! deserialize_num_field {
-            ($key:literal, $as_type:ident) => {{
-                let value = mapping.get($key).ok_or(D::Error::custom(
-                    BobinatorError::RecordFieldMissing($key.to_string()),
-                ))?;
-
-                if let serde_json::Value::Number(v) = value {
-                    v.$as_type().ok_or(())
-                } else {
-                    Err(())
-                }
-                .map_err(|_| {
-                    D::Error::custom(BobinatorError::RecordFieldInvalid(
-                        $key.to_string(),
-                        value.clone(),
-                    ))
-                })
-            }};
-        }
-
-        // Deserialise Value::String.
-        macro_rules! deserialize_str_field {
-            ($key:literal) => {{
-                let value = mapping.get($key).ok_or(D::Error::custom(
-                    BobinatorError::RecordFieldMissing($key.to_string()),
-                ))?;
-
-                if let serde_json::Value::String(v) = value {
-                    Ok(v.to_owned())
-                } else {
-                    Err(D::Error::custom(BobinatorError::RecordFieldInvalid(
-                        $key.to_string(),
-                        value.clone(),
-                    )))
-                }
-            }};
-        }
-
         Ok(Self {
-            id: deserialize_str_field!("id")?,
-            first_name: deserialize_str_field!("firstName")?,
-            surname: deserialize_str_field!("surname")?,
-            last_name: deserialize_str_field!("lastName")?,
-            email: deserialize_str_field!("email")?,
-            site: deserialize_str_field!("site")?,
-            site_id: deserialize_num_field!("siteId", as_i64)?,
-            avatar: deserialize_str_field!("avatar")?,
-            role: deserialize_num_field!("role", as_i64)?,
-            company_id: deserialize_num_field!("companyId", as_i64)?,
-            company_name: deserialize_str_field!("companyName")?,
-            display_name: deserialize_str_field!("displayName")?,
-            session_type: deserialize_str_field!("sessionType")?,
-            state: deserialize_str_field!("state")?,
+            id: deserialize_str_field!(mapping, "id")?,
+            first_name: deserialize_str_field!(mapping, "firstName")?,
+            surname: deserialize_str_field!(mapping, "surname")?,
+            last_name: deserialize_str_field!(mapping, "lastName")?,
+            email: deserialize_str_field!(mapping, "email")?,
+            site: deserialize_str_field!(mapping, "site")?,
+            site_id: deserialize_num_field!(mapping, "siteId", as_i64)?,
+            avatar: deserialize_str_field!(mapping, "avatar")?,
+            role: deserialize_num_field!(mapping, "role", as_i64)?,
+            company_id: deserialize_num_field!(mapping, "companyId", as_i64)?,
+            company_name: deserialize_str_field!(mapping, "companyName")?,
+            display_name: deserialize_str_field!(mapping, "displayName")?,
+            session_type: deserialize_str_field!(mapping, "sessionType")?,
+            state: deserialize_str_field!(mapping, "state")?,
         })
     }
 }

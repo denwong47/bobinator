@@ -46,12 +46,7 @@ pub async fn logout(conn: &Client) -> Result<(), BobinatorError> {
     match code {
         StatusCode::UNAUTHORIZED => Err(BobinatorError::BobUnauthorised),
         StatusCode::OK => {
-            let text = req
-                .text()
-                .await
-                .map_err(|err| BobinatorError::ClientJSONDecodeError(err))?;
-
-            println!("{:?} {}", code, text);
+            println!("Logout succeeded, bye!");
             Ok(())
         }
         code => Err(BobinatorError::ServerReturnedUnexpectedStatus(code)),
