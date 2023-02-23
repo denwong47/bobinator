@@ -16,6 +16,9 @@ pub use employee::*;
 mod request_timeoff;
 pub use request_timeoff::*;
 
+mod status;
+pub use status::*;
+
 mod timeoff;
 pub use timeoff::*;
 

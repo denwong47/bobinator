@@ -1,8 +1,7 @@
 #[allow(unused_imports)]
 use serde::{Deserialize, Serialize};
-use std::collections::hash_map::HashMap;
 
-use crate::DatePortion;
+use crate::{ApprovalState, DatePortion};
 
 #[allow(unused_imports)]
 use super::{TimeoffPolicyType, TimeoffRequest};
@@ -70,6 +69,6 @@ pub struct Timeoff {
     #[serde(rename = "startDatePortion")]
     pub start_date_portion: DatePortion,
     pub states: Option<String>,
-    pub status: String,
+    pub status: ApprovalState,
     pub unit: String,
 }

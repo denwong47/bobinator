@@ -68,7 +68,7 @@ async fn user_prompt(conn: &reqwest::Client) -> Result<(), BobinatorError> {
                     + conch::Modifier::intensity("Bold").unwrap()
                     + conch::Modifier::right(26))
                 .wraps(&timeoff.end_date),
-                (conch::Modifier::right(37)).wraps(&timeoff.status),
+                (conch::Modifier::right(37)).wraps(&timeoff.status.to_string()),
                 (conch::Modifier::right(50)).wraps(&timeoff.policy_type_display_name.name())
             )
         });
