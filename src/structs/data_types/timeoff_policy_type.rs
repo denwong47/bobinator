@@ -1,8 +1,7 @@
 use enum_index::*;
-use serde::{Deserialize, Serialize};
 
 /// Policy Type for mapping the Holiday Balance.
-#[derive(Debug, EnumIndex, Serialize, Deserialize)]
+#[derive(Debug, EnumIndex)]
 #[index_type(String)]
 pub enum TimeoffPolicyType {
     #[index("Forestreet Annual Holiday Policy")]

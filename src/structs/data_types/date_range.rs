@@ -1,8 +1,6 @@
 use super::DatePortion;
 use chrono::NaiveDate;
 use enum_index::*;
-#[allow(unused_imports)]
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, EnumIndex)]
 #[index_type(String)]
