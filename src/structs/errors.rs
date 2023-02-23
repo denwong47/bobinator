@@ -4,13 +4,13 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum BobinatorError {
-    #[error("Cannot build Client because reqwest reported: {0:?}")]
+    #[error("Cannot build Client because reqwest reported: {0}")]
     ClientBuildError(reqwest::Error),
 
-    #[error("Client could not connect to remote host: {0:?}")]
+    #[error("Client could not connect to remote host: {0}")]
     ClientConnectionError(reqwest::Error),
 
-    #[error("Client could not deserialise returned JSON: {0:?}")]
+    #[error("Client could not deserialise returned JSON: {0}")]
     ClientJSONDecodeError(reqwest::Error),
 
     #[error("Data deserialization failed: {0}")]

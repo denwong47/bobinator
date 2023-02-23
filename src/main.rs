@@ -8,6 +8,8 @@ use conch::StringWrapper;
 
 use bobinator::*;
 
+mod _credentials;
+
 #[tokio::main]
 async fn main() {
     // Say Hi
@@ -16,9 +18,7 @@ async fn main() {
         (conch::Modifier::colour("BrightWhite").unwrap()
             + conch::Modifier::intensity("Bold").unwrap())
         .wraps("Welcome to the "),
-        (conch::Modifier::colour("BrightRed").unwrap()
-            + conch::Modifier::intensity("Bold").unwrap())
-        .wraps("bobinator")
+        consts::BOBINATOR_NAME.as_str(),
     );
 
     let build_conn = Connection::new(None);
@@ -36,8 +36,8 @@ async fn main() {
 }
 
 async fn user_prompt(conn: &reqwest::Client) -> Result<(), BobinatorError> {
-    let email = String::from("big@dave.com");
-    let password = String::from("***");
+    let email = String::from(_credentials::USERNAME);
+    let password = String::from(_credentials::PASSWORD);
 
     let result = bob::login(conn, email, password).await;
 

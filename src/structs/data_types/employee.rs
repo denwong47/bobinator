@@ -122,10 +122,7 @@ impl Employee {
     // Temporary function to test functionality
     pub fn greet(&self) {
         println!(
-            "{} is now logged in and online, {} of {} {}!",
-            (conch::Modifier::colour("BrightRed").unwrap()
-                + conch::Modifier::intensity("Bold").unwrap())
-            .wraps("bobinator"),
+            "{} of {}, {} is now logged into {} and online.",
             (conch::Modifier::colour("BrightWhite").unwrap()
                 + conch::Modifier::intensity("Bold").unwrap())
             .wraps(&self.display_name),
@@ -133,6 +130,7 @@ impl Employee {
                 + conch::Modifier::intensity("Bold").unwrap())
             .wraps(&self.company_name),
             (conch::Modifier::intensity("Bold").unwrap()).wraps(&self.site),
+            consts::BOBINATOR_NAME.as_str(),
         );
     }
 }
