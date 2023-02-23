@@ -1,0 +1,40 @@
+name: Github Pages
+
+on:
+  # the 1st condition
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+
+jobs:
+  deploy_gh_pages:
+    name: Rust doc and upload to gh-pages
+    # the 2nd condition
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Rustup update and set default toolchain
+        run: |
+          rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      - name: Cargo fmt
+        run: cargo fmt --all
+      - name: Cargo doc
+        run: make doc
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-docs
+          path: target/doc/
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: target/doc

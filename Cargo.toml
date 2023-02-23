@@ -1,0 +1,25 @@
+[package]
+name = "bobinator"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "bobinator"
+
+[[bin]]
+name = "bobinator"
+
+[dependencies]
+conch = { git = "https://github.com/denwong47/conch", branch = "development" }
+chrono = { version = "0" }
+enum_index = { git = "https://github.com/denwong47/enum_index", branch = "development" }
+lazy_static = "1"
+rayon = "1"
+regex = "1"
+reqwest = { version = "0", features = ["cookies", "json", "gzip"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = { version = "1" }
+tokio = { version = "1", features = ["full"] }
