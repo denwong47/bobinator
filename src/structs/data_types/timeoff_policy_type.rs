@@ -19,3 +19,8 @@ impl Default for TimeoffPolicyType {
         Self::AnnualLeave
     }
 }
+impl TimeoffPolicyType {
+    pub fn name(&self) -> String {
+        return self.index();
+    }
+}

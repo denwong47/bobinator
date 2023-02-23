@@ -1,4 +1,5 @@
 use super::DatePortion;
+use ::serde;
 use chrono::NaiveDate;
 use enum_index::*;
 
@@ -9,7 +10,7 @@ pub enum DateRangeType {
     Days,
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct DateRange {
     pub start_date: NaiveDate,
     pub start_portion: DatePortion,
