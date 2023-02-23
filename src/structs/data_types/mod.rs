@@ -4,6 +4,9 @@ pub use credentials::*;
 mod date_portion;
 pub use date_portion::*;
 
+mod date_range;
+pub use date_range::*;
+
 mod headers;
 pub use headers::*;
 
