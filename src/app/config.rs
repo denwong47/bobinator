@@ -1,6 +1,6 @@
 use directories::UserDirs;
 use lazy_static::lazy_static;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 /// Default
 pub static API_CONFIG_FOLDER: &'static str = ".bobinator";
@@ -11,12 +11,8 @@ pub static API_TOKEN_FILE_NAME: &'static str = "token";
 lazy_static! {
     pub static ref API_CONFIG_PATH: String = UserDirs::new()
         .and_then(|user_dir| user_dir.home_dir().canonicalize().ok())
-        .unwrap_or(
-            Path::new(".")
-                .join(API_CONFIG_FOLDER)
-                .canonicalize()
-                .unwrap()
-        )
+        .unwrap_or(PathBuf::new())
+        .join(API_CONFIG_FOLDER)
         .to_str()
         .unwrap()
         .to_string();

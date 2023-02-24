@@ -8,11 +8,10 @@ use conch::StringWrapper;
 
 use bobinator::*;
 
-mod _credentials;
-
 #[tokio::main]
 async fn main() {
     // Say Hi
+    println!("{}\n", consts::BOB_LOGO.as_str());
     println!(
         "{}{}.",
         (conch::Modifier::colour("BrightWhite").unwrap()
@@ -40,56 +39,56 @@ async fn main() {
 }
 
 async fn user_prompt(conn: &reqwest::Client) -> Result<(), BobinatorError> {
-    let email = String::from(_credentials::USERNAME);
-    let password = String::from(_credentials::PASSWORD);
+    let result = app::login_prompt();
+    if let Ok((email, password)) = result {
+        let employee = bob::login(conn, email, password).await?;
 
-    let employee = bob::login(conn, email, password).await?;
-
-    employee.greet();
-    let timeoffs = bob::timeoff::query(
-        conn,
-        employee,
-        NaiveDate::from_ymd_opt(2023, 2, 22).unwrap(),
-        NaiveDate::from_ymd_opt(2026, 2, 2).unwrap(),
-    )
-    .await?;
-
-    println!("\nYour booked timeoffs:");
-    timeoffs.iter().for_each(|timeoff| {
-        println!(
-            "{}{}{}{}{}{}",
-            conch::Modifier::colour("Grayscale13")
-                .unwrap()
-                .wraps(&timeoff.id.to_string()),
-            (conch::Modifier::colour("BrightWhite").unwrap()
-                + conch::Modifier::intensity("Bold").unwrap()
-                + conch::Modifier::right(12))
-            .wraps(&timeoff.start_date),
-            (conch::Modifier::colour("Grayscale13").unwrap() + conch::Modifier::right(23))
-                .wraps("to"),
-            (conch::Modifier::colour("BrightWhite").unwrap()
-                + conch::Modifier::intensity("Bold").unwrap()
-                + conch::Modifier::right(26))
-            .wraps(&timeoff.end_date),
-            (conch::Modifier::right(37)).wraps(&timeoff.status.to_string()),
-            (conch::Modifier::right(50)).wraps(&timeoff.policy_type_display_name.name())
+        employee.greet();
+        let timeoffs = bob::timeoff::query(
+            conn,
+            employee,
+            NaiveDate::from_ymd_opt(2023, 2, 22).unwrap(),
+            NaiveDate::from_ymd_opt(2026, 2, 2).unwrap(),
         )
-    });
+        .await?;
 
-    println!("\nYour current API Token:");
-    let mut token = bob::get_token_scope(conn).await?;
-    println!("{:?}", token);
+        println!("\nYour booked timeoffs:");
+        timeoffs.iter().for_each(|timeoff| {
+            println!(
+                "{}{}{}{}{}{}",
+                conch::Modifier::colour("Grayscale13")
+                    .unwrap()
+                    .wraps(&timeoff.id.to_string()),
+                (conch::Modifier::colour("BrightWhite").unwrap()
+                    + conch::Modifier::intensity("Bold").unwrap()
+                    + conch::Modifier::right(12))
+                .wraps(&timeoff.start_date),
+                (conch::Modifier::colour("Grayscale13").unwrap() + conch::Modifier::right(23))
+                    .wraps("to"),
+                (conch::Modifier::colour("BrightWhite").unwrap()
+                    + conch::Modifier::intensity("Bold").unwrap()
+                    + conch::Modifier::right(26))
+                .wraps(&timeoff.end_date),
+                (conch::Modifier::right(37)).wraps(&timeoff.status.to_string()),
+                (conch::Modifier::right(50)).wraps(&timeoff.policy_type_display_name.name())
+            )
+        });
 
-    token.extend_scopes(vec![
-        APITokenScope::FullEmployeeRead,
-        APITokenScope::Timeoff,
-        APITokenScope::EmployeeFieldsRead,
-    ]);
+        let _token = app::fetch_update_and_store_token(
+            conn,
+            vec![
+                APITokenScope::FullEmployeeRead,
+                APITokenScope::EmployeeFieldsRead,
+                APITokenScope::Timeoff,
+            ],
+        )
+        .await?;
 
-    token.sync_scopes(conn).await?;
-
-    bob::logout(conn).await.and({
-        println!("Log out succeeded, bye!");
-        Ok(())
-    })
+        bob::logout(conn).await.and({
+            println!("Log out succeeded, bye!");
+            Ok(())
+        })
+    } else {
+        result.and(Ok(()))
+    }
 }

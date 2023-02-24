@@ -5,6 +5,7 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
 use bobinator_macros::{map_get_to_struct, map_put_to_struct};
+use bobinator_models::traits::BobJSONDeserialise;
 
 use crate::*;
 
@@ -45,7 +46,7 @@ map_get_to_struct!(
     get_token_scope,
     "Read the current API Token. Must be used in Clients with active cookie stored.",
     "https://app.hibob.com/api/user/tokens/user-token",
-    json() -> APIToken,
+    bob_json() -> APIToken,
 );
 
 // =====================================================================================

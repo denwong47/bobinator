@@ -8,5 +8,9 @@ edition = "2021"
 [lib]
 name = "bobinator_macros"
 
+[features]
+trace = ["bobinator_models/trace"]
+
 [dependencies]
+conch = { git = "https://github.com/denwong47/conch", branch = "development" }
 bobinator_models = { path = "../bobinator_models" }

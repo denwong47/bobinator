@@ -1,5 +1,6 @@
 use super::DatePortion;
 use chrono::NaiveDate;
+use serde::{Deserialize, Serialize};
 
 /// Construct a JSON for requesting time off.
 ///
@@ -13,6 +14,7 @@ use chrono::NaiveDate;
 ///  'hours': 1,
 ///  'reasonCode': None}
 /// ```
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TimeoffRequest {
     pub policy_type: String,
     pub start_date: NaiveDate,

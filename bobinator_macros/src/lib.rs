@@ -1,3 +1,18 @@
+/// Print a tracer to stdout if feature "trace" is enabled.
+#[macro_export]
+macro_rules! leave_trace {
+    ($title:literal | $($arg:tt)+) => {
+        #[cfg(feature="trace")]
+        println!(
+            "\u{1f4ad} {} | {}",
+            $title,
+            conch::Modifier::colour("Grayscale13").unwrap().wraps(
+                &format!($($arg)*)
+            )
+        );
+    };
+}
+
 /// Generate an async function, mapped to a GET endpoint to a return struct.
 #[macro_export]
 macro_rules! map_get_to_struct {
@@ -19,6 +34,7 @@ macro_rules! map_get_to_struct {
                 $param: $type,
             )*
         ) -> Result<$struct, bobinator_models::structs::BobinatorError> {
+
             let resp = conn
                 .get(format!($end_point))
                 .send()

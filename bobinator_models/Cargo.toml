@@ -8,7 +8,11 @@ edition = "2021"
 [lib]
 name = "bobinator_models"
 
+[features]
+trace = []
+
 [dependencies]
+async-trait = { version = "0" }
 enum_index = { git = "https://github.com/denwong47/enum_index", branch = "development" }
 reqwest = { version = "0", features = ["cookies", "json", "gzip"] }
 serde = { version = "1", features = ["derive"] }
