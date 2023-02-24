@@ -1,9 +1,19 @@
-use reqwest::{self, StatusCode};
+use std::io;
+
+use reqwest::StatusCode;
 use serde_json::Value;
 use thiserror::Error;
 
+use super::APITokenScope;
+
 #[derive(Error, Debug)]
 pub enum BobinatorError {
+    #[error("Cannot read token file from {0}.")]
+    TokenReadError(String, io::Error),
+
+    #[error("No token provided.")]
+    TokenNotProvided,
+
     #[error("Cannot build Client because reqwest reported: {0}")]
     ClientBuildError(reqwest::Error),
 
@@ -18,6 +28,9 @@ pub enum BobinatorError {
 
     #[error("Bob refused your login; check your email and password combination.")]
     BobUnauthorised,
+
+    #[error("API Token do not have {0:?} permissions; access denied.")]
+    TokenPermissionDenied(Vec<APITokenScope>),
 
     #[error("Bob returned an error code that we don't expect: {0:?}")]
     ServerReturnedUnexpectedStatus(StatusCode),

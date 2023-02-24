@@ -16,6 +16,7 @@ bobinator_models = { path = "./bobinator_models" }
 bobinator_macros = { path = "./bobinator_macros" }
 conch = { git = "https://github.com/denwong47/conch", branch = "development" }
 chrono = { version = "0", features = ["serde"] }
+directories = { version = "4" }
 enum_index = { git = "https://github.com/denwong47/enum_index", branch = "development" }
 lazy_static = "1"
 rayon = "1"

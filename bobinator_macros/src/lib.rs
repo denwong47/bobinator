@@ -1,46 +1,119 @@
-// Deserialise Value::Number.
+/// Generate an async function, mapped to a GET endpoint to a return struct.
 #[macro_export]
-macro_rules! deserialize_num_field {
-    ($mapping:expr, $key:literal, $as_type:ident) => {{
-        let value =
-            $mapping
-                .get($key)
-                .ok_or(D::Error::custom(BobinatorError::RecordFieldMissing(
-                    $key.to_string(),
-                )))?;
+macro_rules! map_get_to_struct {
 
-        if let serde_json::Value::Number(v) = value {
-            v.$as_type().ok_or(())
-        } else {
-            Err(())
+    (
+        $func_name:ident,
+        $doc:literal,
+        $end_point:literal,
+        $(($param:ident: $type:ident),)*
+        $op:ident() -> $struct:ident
+        $(,)?
+    ) => {
+        use bobinator_models;
+
+        #[doc = $doc]
+        pub async fn $func_name(
+            conn: &Client,
+            $(
+                $param: $type,
+            )*
+        ) -> Result<$struct, bobinator_models::structs::BobinatorError> {
+            let resp = conn
+                .get(format!($end_point))
+                .send()
+                .await
+                .map_err(|err| bobinator_models::structs::BobinatorError::ClientConnectionError(err))?;
+
+            let de_result = bobinator_models::func::handle_response(resp);
+            if let Ok(resp) = de_result {
+                let data: $struct = resp
+                    .$op()
+                    .await
+                    .map_err(|de_err| bobinator_models::structs::BobinatorError::DataJSONDecodeError(de_err.to_string()))?;
+
+                Ok(data)
+            } else {
+                Err(de_result.unwrap_err())
+            }
         }
-        .map_err(|_| {
-            D::Error::custom(BobinatorError::RecordFieldInvalid(
-                $key.to_string(),
-                value.clone(),
-            ))
-        })
-    }};
+    };
 }
 
-// Deserialise Value::String.
+/// Generate an async function, mapped to a POST endpoint and a return struct.
 #[macro_export]
-macro_rules! deserialize_str_field {
-    ($mapping:expr, $key:literal) => {{
-        let value =
-            $mapping
-                .get($key)
-                .ok_or(D::Error::custom(BobinatorError::RecordFieldMissing(
-                    $key.to_string(),
-                )))?;
+macro_rules! map_post_to_struct {
+    (
+        $func_name:ident,
+        $doc:literal,
+        $end_point:literal,
+        $(($param:ident: $type:ident),)*
+        $post_struct:ident,
+        $op:ident() -> $return_struct:ident
+        $(,)?
+    ) => {
+        use bobinator_models::*;
 
-        if let serde_json::Value::String(v) = value {
-            Ok(v.to_owned())
-        } else {
-            Err(D::Error::custom(BobinatorError::RecordFieldInvalid(
-                $key.to_string(),
-                value.clone(),
-            )))
+        #[doc = $doc]
+        pub async fn $func_name(
+            conn: &Client,
+            $(
+                $param: $type,
+            )*
+            data: $post_struct,
+        ) -> Result<$return_struct, bobinator_models::structs::BobinatorError> {
+            let resp = conn
+                .post(format!($end_point))
+                .json(&data)
+                .send()
+                .await
+                .map_err(|err| bobinator_models::structs::BobinatorError::ClientConnectionError(err))?;
+
+            let de_result = bobinator_models::func::handle_response(resp);
+            if let Ok(resp) = de_result {
+                let data: $return_struct = resp
+                    .$op()
+                    .await
+                    .map_err(|de_err| bobinator_models::structs::BobinatorError::DataJSONDecodeError(de_err.to_string()))?;
+
+                Ok(data)
+            } else {
+                Err(de_result.unwrap_err())
+            }
         }
-    }};
+    };
+}
+
+/// Generate an async function, mapped to a PUT endpoint and no returns.
+#[macro_export]
+macro_rules! map_put_to_struct {
+    (
+        $func_name:ident,
+        $doc:literal,
+        $end_point:literal,
+        $(($param:ident: $type:ident),)*
+        $put_struct:ident
+        $(,)?
+    ) => {
+        use bobinator_models::*;
+
+        #[doc = $doc]
+        pub async fn $func_name(
+            conn: &Client,
+            $(
+                $param: $type,
+            )*
+            data: $put_struct,
+        ) -> Result<(), bobinator_models::structs::BobinatorError> {
+            let resp = conn
+                .put(format!($end_point))
+                .json(&data)
+                .send()
+                .await
+                .map_err(|err| bobinator_models::structs::BobinatorError::ClientConnectionError(err))?;
+
+                let de_result = bobinator_models::func::handle_response(resp);
+                de_result.and(Ok(()))
+        }
+    };
 }
