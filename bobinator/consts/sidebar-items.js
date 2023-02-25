@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["BOBINATOR_NAME",""],["BOB_LOGO",""],["EMAIL_PATTERN",""]]};

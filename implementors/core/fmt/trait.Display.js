@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"bobinator":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.67.1/core/fmt/trait.Display.html\" title=\"trait core::fmt::Display\">Display</a> for <a class=\"enum\" href=\"bobinator/enum.ApprovalState.html\" title=\"enum bobinator::ApprovalState\">ApprovalState</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

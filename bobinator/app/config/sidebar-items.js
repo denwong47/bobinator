@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"static":[["API_CONFIG_FOLDER","Default"],["API_TOKEN_FILE_NAME","Default file name for the API token file."]],"struct":[["API_CONFIG_PATH",""],["API_TOKEN_PATH",""]]};
