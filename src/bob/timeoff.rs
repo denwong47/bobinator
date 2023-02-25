@@ -2,13 +2,20 @@ use crate::*;
 use chrono::NaiveDate;
 use reqwest::{Client, StatusCode};
 
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+struct TimeoffResponse {
+    requests: Vec<Timeoff>,
+}
+
 /// Attempt to send a login request using the credentials provided.
 pub async fn query(
     conn: &Client,
     employee: Employee,
     from: NaiveDate,
     to: NaiveDate,
-) -> Result<(), BobinatorError> {
+) -> Result<Vec<Timeoff>, BobinatorError> {
     let employee_id = employee.id;
 
     let req = conn
@@ -25,13 +32,12 @@ pub async fn query(
     match code {
         StatusCode::UNAUTHORIZED => Err(BobinatorError::BobUnauthorised),
         StatusCode::OK => {
-            let text = req
-                .text()
+            let timeoffs: TimeoffResponse = req
+                .json()
                 .await
                 .map_err(|err| BobinatorError::ClientJSONDecodeError(err))?;
 
-            println!("{:?} {}", code, text);
-            Ok(())
+            Ok(timeoffs.requests)
         }
         code => Err(BobinatorError::ServerReturnedUnexpectedStatus(code)),
     }

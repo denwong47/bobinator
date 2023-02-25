@@ -1,9 +1,5 @@
-use std::collections::hash_map::HashMap;
-
-use serde::de::Error;
 #[allow(unused_imports)]
 use serde::{Deserialize, Serialize};
-use serde_json;
 
 use conch;
 use conch::StringWrapper;
@@ -32,100 +28,46 @@ use crate::*;
 ///  'state': 'active',
 ///  'isLoggedInIntoSandbox': False}
 /// ```
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Employee {
     pub id: String,
+
+    #[serde(rename = "firstName")]
     pub first_name: String,
     pub surname: String,
+
+    #[serde(rename = "lastName")]
     pub last_name: String,
     pub email: String,
     pub site: String,
+
+    #[serde(rename = "siteId")]
     pub site_id: i64,
     pub avatar: String,
     pub role: i64, // Convert to Enum if variants known
+
+    #[serde(rename = "companyId")]
     pub company_id: i64,
+
+    #[serde(rename = "companyName")]
     pub company_name: String,
     // pub is_manager: bool,
     // pub reportees: Vec<i64>,
     // pub all_reportees: Vec<i64>,
+    #[serde(rename = "displayName")]
     pub display_name: String,
     // pub mocked_role: bool,
+    #[serde(rename = "sessionType")]
     pub session_type: String, // Convert to Enum if variants known
-    pub state: String,        // Convert to Enum if variants known
-                              // pub is_logged_in_into_sandbox: bool,
-}
-impl<'de> Deserialize<'de> for Employee {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let mapping: HashMap<&str, serde_json::Value> = HashMap::deserialize(deserializer)?;
-
-        // Deserialise Value::Number.
-        macro_rules! deserialize_num_field {
-            ($key:literal, $as_type:ident) => {{
-                let value = mapping.get($key).ok_or(D::Error::custom(
-                    BobinatorError::RecordFieldMissing($key.to_string()),
-                ))?;
-
-                if let serde_json::Value::Number(v) = value {
-                    v.$as_type().ok_or(())
-                } else {
-                    Err(())
-                }
-                .map_err(|_| {
-                    D::Error::custom(BobinatorError::RecordFieldInvalid(
-                        $key.to_string(),
-                        value.clone(),
-                    ))
-                })
-            }};
-        }
-
-        // Deserialise Value::String.
-        macro_rules! deserialize_str_field {
-            ($key:literal) => {{
-                let value = mapping.get($key).ok_or(D::Error::custom(
-                    BobinatorError::RecordFieldMissing($key.to_string()),
-                ))?;
-
-                if let serde_json::Value::String(v) = value {
-                    Ok(v.to_owned())
-                } else {
-                    Err(D::Error::custom(BobinatorError::RecordFieldInvalid(
-                        $key.to_string(),
-                        value.clone(),
-                    )))
-                }
-            }};
-        }
-
-        Ok(Self {
-            id: deserialize_str_field!("id")?,
-            first_name: deserialize_str_field!("firstName")?,
-            surname: deserialize_str_field!("surname")?,
-            last_name: deserialize_str_field!("lastName")?,
-            email: deserialize_str_field!("email")?,
-            site: deserialize_str_field!("site")?,
-            site_id: deserialize_num_field!("siteId", as_i64)?,
-            avatar: deserialize_str_field!("avatar")?,
-            role: deserialize_num_field!("role", as_i64)?,
-            company_id: deserialize_num_field!("companyId", as_i64)?,
-            company_name: deserialize_str_field!("companyName")?,
-            display_name: deserialize_str_field!("displayName")?,
-            session_type: deserialize_str_field!("sessionType")?,
-            state: deserialize_str_field!("state")?,
-        })
-    }
+    pub state: String, // Convert to Enum if variants known
+                       // pub is_logged_in_into_sandbox: bool,
 }
 
 impl Employee {
     // Temporary function to test functionality
     pub fn greet(&self) {
         println!(
-            "{} is now logged in and online, {} of {} {}!",
-            (conch::Modifier::colour("BrightRed").unwrap()
-                + conch::Modifier::intensity("Bold").unwrap())
-            .wraps("bobinator"),
+            "{} of {}, {} is now logged into {} and online.",
             (conch::Modifier::colour("BrightWhite").unwrap()
                 + conch::Modifier::intensity("Bold").unwrap())
             .wraps(&self.display_name),
@@ -133,6 +75,7 @@ impl Employee {
                 + conch::Modifier::intensity("Bold").unwrap())
             .wraps(&self.company_name),
             (conch::Modifier::intensity("Bold").unwrap()).wraps(&self.site),
+            consts::BOBINATOR_NAME.as_str(),
         );
     }
 }

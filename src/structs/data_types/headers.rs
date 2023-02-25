@@ -22,7 +22,7 @@ macro_rules! expand_str_fields {
 macro_rules! expand_vec_str_fields {
     ($($field:ident),+$(,)?) => {
         $(
-            #[doc = "Chained method for altering the [`"]
+            #[doc = "Chained method for altering the [`Self::"]
             #[doc = stringify!($field)]
             #[doc = "`] of a [`Headers`] instance."]
             pub fn $field<I, S>(mut self, value: I) -> Self
