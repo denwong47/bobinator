@@ -1,4 +1,4 @@
-use super::DatePortion;
+use super::{DatePortion, RequestRangeType, TimeoffPolicyType};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
@@ -16,12 +16,29 @@ use serde::{Deserialize, Serialize};
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TimeoffRequest {
-    pub policy_type: String,
+    #[serde(rename = "policyType")]
+    pub policy_type: TimeoffPolicyType,
+
+    #[serde(rename = "startDate")]
     pub start_date: NaiveDate,
+
+    #[serde(rename = "endDate")]
     pub end_date: NaiveDate,
+
+    #[serde(rename = "startDatePortion")]
     pub start_date_portion: DatePortion,
+
+    #[serde(rename = "endDatePortion")]
     pub end_date_portion: DatePortion,
-    pub request_range_type: String,
+
+    #[serde(rename = "requestRangeType")]
+    pub request_range_type: RequestRangeType,
+
+    /// This field is optional if `request_range_type` is set to `days`;
+    /// but is set as mandatory because that's how their web UI does it.
+    #[serde(rename = "hours")]
     pub hours: usize,
+
+    #[serde(rename = "reasonCode")]
     pub reason_code: Option<i64>,
 }

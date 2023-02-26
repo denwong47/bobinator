@@ -19,6 +19,9 @@ pub use headers::*;
 mod employee;
 pub use employee::*;
 
+mod request_range_type;
+pub use request_range_type::*;
+
 mod request_timeoff;
 pub use request_timeoff::*;
 

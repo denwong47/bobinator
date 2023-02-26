@@ -32,6 +32,6 @@ impl Display for ApprovalState {
             }
         };
 
-        write!(f, "{}", wrapper.wraps(&self.index()))
+        write!(f, "{}", wrapper.wraps(&format!("{:^10}", &self.index())))
     }
 }

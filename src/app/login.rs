@@ -1,6 +1,8 @@
 use conch;
 use conch::StringWrapper;
 
+use reqwest::Client;
+
 use crate::*;
 
 /// Prompt the user for email/password login.
@@ -39,4 +41,27 @@ pub fn login_prompt() -> Result<(String, String), BobinatorError> {
     }
 
     Err(BobinatorError::LoginAborted)
+}
+
+/// Issue a login request to bob.
+/// This is not a necessary step if we are using API Token. Only use this if you intend
+/// to use cookies with username and passwords.
+pub async fn try_login(conn: &Client) -> Result<Employee, BobinatorError> {
+    for _ in 0..3 {
+        let (email, password) = login_prompt()?;
+        let result = bob::cookies::login(&conn, email, password).await;
+
+        match result {
+            Ok(employee) => {
+                employee.greet();
+                return Ok(employee);
+            }
+            Err(BobinatorError::BobUnauthorised) => {
+                println!("\u{2502} Bob refused your login; please try again.")
+            }
+            Err(err) => return Err(err),
+        }
+    }
+
+    Err(BobinatorError::BobUnauthorised)
 }

@@ -8,12 +8,12 @@ use bobinator::*;
 
 #[tokio::main]
 async fn main() {
-    // Say Hi
+    // Run the whole app.
     let result = app::run().await;
 
     drop(result.or_else(|err| {
         println!(
-            "An error has occurred: {}",
+            "\nAn error has occurred: {}",
             (conch::Modifier::colour("BrightYellow").unwrap()
                 + conch::Modifier::intensity("Bold").unwrap())
             .wraps(&err.to_string())

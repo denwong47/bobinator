@@ -6,9 +6,9 @@ pub enum DatePortion {
     #[index("all_day")]
     AllDay,
 
-    #[index("am")]
+    #[index("morning")]
     Morning,
 
-    #[index("pm")]
+    #[index("afternoon")]
     Afternoon,
 }

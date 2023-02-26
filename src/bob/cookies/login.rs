@@ -14,19 +14,23 @@ pub async fn login(
 ) -> Result<Employee, BobinatorError> {
     let credentials = Credentials::new(email, password);
 
-    let req = conn
+    let fut = conn
         .post("https://app.hibob.com/api/login")
         .json(&credentials)
-        .send()
+        .send();
+
+    // Immediately discard the credentials to make good our promise.
+    drop(credentials);
+    let response = fut
         .await
         .map_err(|err| BobinatorError::ClientConnectionError(err))?;
 
-    let code = req.status();
+    let code = response.status();
 
     match code {
         StatusCode::UNAUTHORIZED => Err(BobinatorError::BobUnauthorised),
         StatusCode::OK => {
-            let employee = req
+            let employee = response
                 .json()
                 .await
                 .map_err(|de_err| BobinatorError::DataJSONDecodeError(de_err.to_string()))?;

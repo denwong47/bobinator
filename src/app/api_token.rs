@@ -4,9 +4,6 @@ use std::path::Path;
 
 use reqwest::Client;
 
-#[allow(unused_imports)]
-use conch;
-
 #[cfg(feature = "trace")]
 use conch::StringWrapper;
 
@@ -66,7 +63,7 @@ pub async fn fetch_update_and_store_token(
     conn: &Client,
     scopes: Vec<APITokenScope>,
 ) -> Result<APIToken, BobinatorError> {
-    let mut token = bob::get_token_scope(conn).await?;
+    let mut token = bob::cookies::get_token_scope(conn).await?;
 
     leave_trace!("Token retrieved" | "{:?}", token);
 
@@ -99,14 +96,12 @@ pub async fn get_token_or_login() -> Result<impl HasToken, BobinatorError> {
         }
         Err(_) => {
             leave_trace!("No token found" | "We need to prompt user for login.");
-
-            let (email, password) = login::login_prompt()?;
+            println!("{}", "API Token not found.\n");
 
             // Temporary client with full login access
             let conn = Connection::new(None)?;
 
-            let employee = bob::login(&conn, email, password).await?;
-            employee.greet();
+            let _employee = try_login(&conn).await?;
 
             let token = fetch_update_and_store_token(
                 &conn,

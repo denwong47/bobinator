@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::{ApprovalState, DatePortion};
 
 #[allow(unused_imports)]
-use super::{TimeoffPolicyType, TimeoffRequest};
+use super::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
 
 /// A struct representing a single timeoff received from bob.
 #[allow(dead_code)]
@@ -55,7 +55,7 @@ pub struct Timeoff {
     pub reason_code_id: Option<String>,
 
     #[serde(rename = "requestRangeType")]
-    pub request_range_type: String,
+    pub request_range_type: RequestRangeType,
 
     #[serde(rename = "requestedBy")]
     pub requested_by: String,
