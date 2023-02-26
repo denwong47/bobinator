@@ -8,6 +8,9 @@ use super::APITokenScope;
 
 #[derive(Error, Debug)]
 pub enum BobinatorError {
+    #[error("Cannot create local configuration folder at {0}: {1}")]
+    ConfigPathError(String, io::Error),
+
     #[error("Cannot read token file from {0}: {1}")]
     TokenReadError(String, io::Error),
 
