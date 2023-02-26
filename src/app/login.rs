@@ -1,6 +1,8 @@
 use conch;
 use conch::StringWrapper;
+use reqwest::Client;
 
+use super::api_token;
 use crate::*;
 
 /// Prompt the user for email/password login.
@@ -39,4 +41,18 @@ pub fn login_prompt() -> Result<(String, String), BobinatorError> {
     }
 
     Err(BobinatorError::LoginAborted)
+}
+
+/// Check the current machine for Token, if not found, perform a login.
+pub async fn get_token_or_login(conn: &Client) -> Result<impl HasToken, BobinatorError> {
+    api_token::read_token().or({
+        let (email, password) = app::login_prompt()?;
+
+        let employee = bob::login(conn, email, password).await?;
+        employee.greet();
+
+        let token = bob::get_token_scope(conn).await?;
+
+        Ok(token.into())
+    })
 }

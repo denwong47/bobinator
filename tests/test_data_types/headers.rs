@@ -20,7 +20,7 @@ mod test_headers_into {
         };
     }
 
-    test_factory!(default_headers, Headers::new(), {
+    test_factory!(default_headers, Headers::new(None), {
         let mut headers = HashMap::new();
 
         headers.insert(header::USER_AGENT, DEFAULT_USER_AGENT.to_string());
@@ -40,7 +40,7 @@ mod test_headers_into {
 
     test_factory! (
         headers_replaced_user_agent,
-        Headers::new()
+        Headers::new(None)
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"),
         {
             let mut headers = HashMap::new();

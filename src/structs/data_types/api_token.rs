@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::APITokenScope;
+use crate::*;
 
 /// An API Token, together with scope information.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -11,6 +11,11 @@ pub struct APIToken {
     #[serde(rename = "employeeId")]
     pub employee_id: String,
     pub id: i64,
+}
+impl HasToken for APIToken {
+    fn key(&self) -> String {
+        self.token.clone()
+    }
 }
 impl APIToken {
     /// Add any non-existing scope members to itself.
@@ -33,5 +38,39 @@ impl APIToken {
     /// Drop from its own scopes any members as requested.
     pub fn drop_scopes(&mut self, scopes: Vec<APITokenScope>) {
         self.scopes.retain(|scope| !scopes.contains(&scope));
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct APITokenOnly {
+    pub token: String,
+}
+impl From<APIToken> for APITokenOnly {
+    /// Reduce this instance into a [`APITokenOnly`] before serialization.
+    fn from(value: APIToken) -> Self {
+        Self { token: value.token }
+    }
+}
+impl HasToken for APITokenOnly {
+    fn key(&self) -> String {
+        self.token.clone()
+    }
+}
+impl APITokenOnly {
+    /// Promote this instance into a APIToken.
+    pub fn promote(
+        self,
+        name: String,
+        scopes: Vec<APITokenScope>,
+        employee_id: String,
+        id: i64,
+    ) -> APIToken {
+        APIToken {
+            token: self.key(),
+            name,
+            scopes,
+            employee_id,
+            id,
+        }
     }
 }

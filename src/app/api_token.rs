@@ -11,9 +11,10 @@ use conch;
 use conch::StringWrapper;
 
 use bobinator_macros::leave_trace;
+use serde::Serialize;
 
 use super::config;
-use crate::{bob, APIToken, APITokenScope, BobinatorError};
+use crate::{bob, APIToken, APITokenOnly, APITokenScope, BobinatorError, HasToken};
 
 /// Read the current path for API Token file.
 fn path<'a>() -> &'a Path {
@@ -21,16 +22,18 @@ fn path<'a>() -> &'a Path {
 }
 
 /// Attempt to read a token from the present location.
-pub fn read_token() -> Result<String, BobinatorError> {
+pub fn read_token() -> Result<APITokenOnly, BobinatorError> {
     leave_trace!("Attempting to retrieve token from" | "{}", path().display());
+
     fs::read_to_string(Path::new(path()))
+        .map(|token_str| APITokenOnly { token: token_str })
         .map_err(|io_err| BobinatorError::TokenReadError(config::API_TOKEN_PATH.clone(), io_err))
 }
 
 /// Attempt to save a token to the present location.
-pub fn save_token(token: &APIToken) -> Result<(), BobinatorError> {
-    fs::write(path(), token.token.as_bytes()).map_err(|io_err| {
-        BobinatorError::TokenSaveError(config::API_TOKEN_PATH.clone(), io_err, token.token.clone())
+pub fn save_token(token: &(impl Serialize + HasToken)) -> Result<(), BobinatorError> {
+    fs::write(path(), token.key().as_bytes()).map_err(|io_err| {
+        BobinatorError::TokenSaveError(config::API_TOKEN_PATH.clone(), io_err, token.key())
     })
 }
 
