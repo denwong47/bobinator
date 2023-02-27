@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::*;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct TimeoffResponse {
+pub struct TimeoffResponse {
     pub requests: Vec<Timeoff>,
 }
 
@@ -15,7 +15,7 @@ use bobinator_models::traits::BobJSONDeserialise;
 
 map_get_to_struct! (
     _list_requests,
-    "List all [`Timeoff`] of an employee by id.\nMust be used with an cookies.",
+    "List all [`Timeoff`] of an employee by id.\nMust be used with cookies session.",
     "https://app.hibob.com/api/timeoff/employees/{employee_id}/requests/inRange?from={from}&to={to}",
     // TODO Restructure macro to allow &str?
     (employee_id: String),

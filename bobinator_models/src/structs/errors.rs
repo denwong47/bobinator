@@ -1,5 +1,6 @@
 use std::io;
 
+use chrono::NaiveDate;
 #[allow(unused_imports)]
 use reqwest::{Response, StatusCode};
 use thiserror::Error;
@@ -53,4 +54,7 @@ pub enum BobinatorError {
 
     #[error("Bob returned an error code that we don't expect: {0:?}")]
     ServerReturnedUnexpectedStatus(StatusCode),
+
+    #[error("Cannot request Friday off on {0} as it is not a Friday.")]
+    FridayOffOnNonFriday(NaiveDate),
 }

@@ -5,7 +5,6 @@ use reqwest::{Response, StatusCode};
 pub fn handle_response(response: Response) -> Result<Response, BobinatorError> {
     match response.status() {
         StatusCode::OK => Ok(response),
-
         StatusCode::UNAUTHORIZED => Err(BobinatorError::BobUnauthorised),
         code => Err(BobinatorError::ServerReturnedUnexpectedStatus(code)),
     }
