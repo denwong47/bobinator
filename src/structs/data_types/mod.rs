@@ -13,6 +13,9 @@ pub use date_portion::*;
 mod date_range;
 pub use date_range::*;
 
+mod fridays;
+pub use fridays::*;
+
 mod headers;
 pub use headers::*;
 

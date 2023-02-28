@@ -55,6 +55,9 @@ pub enum BobinatorError {
     #[error("Bob returned an error code that we don't expect: {0:?}")]
     ServerReturnedUnexpectedStatus(StatusCode),
 
+    #[error("{0} is not a {1}")]
+    IncorrectWeekday(NaiveDate, String),
+
     #[error("Cannot request Friday off on {0} as it is not a Friday.")]
     FridayOffOnNonFriday(NaiveDate),
 }

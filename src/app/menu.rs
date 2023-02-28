@@ -1,38 +1,45 @@
-use chrono::NaiveDate;
+use lazy_static::lazy_static;
 use reqwest::Client;
 
-use crate::bob;
+use conch;
+use conch::StringWrapper;
+
 use crate::common::*;
-use crate::Employee;
-use bobinator_models::structs::BobinatorError;
+use crate::*;
+
+lazy_static! {
+    pub static ref MENU_PROMPT: String = (conch::Modifier::colour("BrightWhite").unwrap()
+        + conch::Modifier::intensity("Bold").unwrap())
+    .wraps("\u{2503} Menu\n")
+        + "\u{2502}\n"
+        + "\u{2502} 0 - Book Friday Offs\n"
+        + "\u{2502} 1 - Does nothing\n"
+        + "\u{2502}\n"
+        + "\u{2502} q - Exit";
+    pub static ref PROMPT_FOR_COMMAND: String = String::from("\nEnter Command: [0-4, q] ");
+}
 
 /// Show main loop menu for commands.
 pub async fn menu(conn: &Client, employee: &Employee) -> Result<(), BobinatorError> {
     loop {
-        match UserInput::for_command(consts::PROMPT_FOR_COMMAND.as_str(), 0..5, usize::MAX, 'q') {
-            UserInput::Integer(0) => loop {
-                match UserInput::for_text("Enter date: [YYYY-MM-DD] ") {
-                    UserInput::Text(text) => match NaiveDate::parse_from_str(&text, "%Y-%m-%d") {
-                        Ok(date) => {
-                            let result = bob::cookies::timeoff::make_friday_off_request(
-                                conn, &employee, date,
-                            )
-                            .await;
+        println!("\n{}", MENU_PROMPT.as_str());
 
-                            match result {
-                                Ok(id) => println!("Request made: {}", id.unwrap_or(0)),
-                                Err(BobinatorError::FridayOffOnNonFriday(date)) => {
-                                    println!("{} is not a Friday.", date)
-                                }
-                                Err(err) => println!("{}", err),
-                            }
-                        }
-                        Err(_) => println!("`{}` is not a valid date", text),
-                    },
-                    UserInput::Exit => break,
-                    _ => println!("Invalid Input."),
-                }
+        match UserInput::for_command(PROMPT_FOR_COMMAND.as_str(), 0..2, usize::MAX, 'q').and_then(
+            |input| {
+                println!("");
+                input
             },
+        ) {
+            UserInput::Integer(0) => app::timeoff::book_fridays_off(conn, employee).await?,
+            UserInput::Integer(1) => {
+                println!(
+                    "{}",
+                    (conch::Modifier::colour("BrightYellow").unwrap()
+                        + conch::Modifier::intensity("Bold").unwrap())
+                    .wraps("I told you, this does nothing.\nWhat do you expect?")
+                        + "\n\nTry something else."
+                )
+            }
             UserInput::Integer(command) => println!("{} requested.", command),
             UserInput::Exit => break,
             _ => {
@@ -41,5 +48,8 @@ pub async fn menu(conn: &Client, employee: &Employee) -> Result<(), BobinatorErr
         }
     }
 
-    Ok(())
+    bob::cookies::logout(conn).await.and_then(|v| {
+        println!("Logout successful.");
+        Ok(v)
+    })
 }

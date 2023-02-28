@@ -28,8 +28,18 @@ pub enum UserInput {
     Integer(u64),
     Text(String),
     Password(String),
+    Choice(bool),
     RetriesExceeded,
     Exit,
+}
+impl UserInput {
+    /// Do something immediately after the prompt.
+    pub fn and_then<F>(self, f: F) -> Self
+    where
+        F: FnOnce(Self) -> Self,
+    {
+        f(self)
+    }
 }
 impl UserInput {
     /// Prompt for a number input.
@@ -156,6 +166,35 @@ impl UserInput {
                             .wraps("email"),
                         );
                     }
+                }
+            } else {
+                return Self::Exit;
+            }
+        }
+
+        Self::RetriesExceeded
+    }
+
+    /// Prompt for a bool input.
+    pub fn for_choice(
+        prompt: impl ToString,
+        default: bool,
+        retries: Option<usize>,
+        exit_prompt: char,
+    ) -> Self {
+        for _ in 0..retries.unwrap_or(1) {
+            let result = prompt_text(prompt.to_string());
+
+            if let Ok(input) = result {
+                match input.len() {
+                    0 => return Self::Choice(default),
+                    1 => match input.chars().next().map(|chr| chr.to_ascii_lowercase()) {
+                        Some('y') => return Self::Choice(true),
+                        Some('n') => return Self::Choice(false),
+                        Some(char) if char == exit_prompt => return Self::Exit,
+                        _ => {}
+                    },
+                    _ => {}
                 }
             } else {
                 return Self::Exit;

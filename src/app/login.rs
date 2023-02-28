@@ -27,7 +27,12 @@ pub fn login_prompt() -> Result<(String, String), BobinatorError> {
         }
 
         let password_prompt =
-            common::UserInput::for_password(password_title.clone() + ": ", None, None);
+            common::UserInput::for_password(password_title.clone() + ": ", None, None).and_then(
+                |input| {
+                    println!();
+                    input
+                },
+            );
         if password_prompt == common::UserInput::Exit {
             return Err(BobinatorError::LoginAborted);
         }

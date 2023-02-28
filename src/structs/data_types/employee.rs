@@ -60,7 +60,12 @@ pub struct Employee {
     #[serde(rename = "sessionType")]
     pub session_type: String, // Convert to Enum if variants known
     pub state: String, // Convert to Enum if variants known
-                       // pub is_logged_in_into_sandbox: bool,
+    // pub is_logged_in_into_sandbox: bool,
+
+    // Private fields.
+    /// The timeoff requests for this employee.
+    #[serde(skip)]
+    pub timeoff_requests: Vec<Timeoff>,
 }
 
 impl Employee {
