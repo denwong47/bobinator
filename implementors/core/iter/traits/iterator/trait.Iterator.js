@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"bobinator":[["impl&lt;const D:&nbsp;<a class=\"primitive\" href=\"https://doc.rust-lang.org/1.67.1/std/primitive.usize.html\">usize</a>, const G:&nbsp;<a class=\"primitive\" href=\"https://doc.rust-lang.org/1.67.1/std/primitive.usize.html\">usize</a>&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.67.1/core/iter/traits/iterator/trait.Iterator.html\" title=\"trait core::iter::traits::iterator::Iterator\">Iterator</a> for <a class=\"struct\" href=\"bobinator/struct.WeekdayIntervalIter.html\" title=\"struct bobinator::WeekdayIntervalIter\">WeekdayIntervalIter</a>&lt;D, G&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

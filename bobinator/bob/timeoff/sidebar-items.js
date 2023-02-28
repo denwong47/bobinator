@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["query","Attempt to send a login request using the credentials provided."]]};

@@ -163,6 +163,22 @@
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
 </pre><pre class="rust"><code><span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>reqwest::header;
 <span class="kw">use </span>std::iter::Iterator;
@@ -250,10 +266,11 @@
     // sec_fetch_mode: String,
     // sec_fetch_site: String,
     </span>te: String,
+    authorization: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 <span class="kw">impl </span>Headers {
     <span class="doccomment">/// Create a Headers with default settings, mimicking a Firefox on OS X.
-    </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>new(authorization: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             user_agent: DEFAULT_USER_AGENT.to_string(),
             accept: DEFAULT_ACCEPT.clone(),
@@ -266,6 +283,7 @@
             // sec_fetch_mode: String::from(&quot;cors&quot;),
             // sec_fetch_site: String::from(&quot;same-origin&quot;),
             </span>te: DEFAULT_TE.to_string(),
+            authorization,
         }
     }
 
@@ -282,13 +300,23 @@
     );
 
     <span class="macro">expand_vec_str_fields!</span>(accept, accept_encoding,);
+
+    <span class="doccomment">/// Chained method for altering the [`Self::authorization`]
+    /// of a [`Headers`] instance.
+    </span><span class="kw">pub fn </span>authorization&lt;S&gt;(<span class="kw-2">mut </span><span class="self">self</span>, value: String) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>S: ToString,
+    {
+        <span class="self">self</span>.authorization = <span class="prelude-val">Some</span>(value.to_string());
+        <span class="self">self
+    </span>}
 }
 <span class="kw">impl </span>Default <span class="kw">for </span>Headers {
     <span class="doccomment">/// Create a new [`Headers`] object with default values.
     ///
     /// Identical to [`Headers::new()`].
     </span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new()
+        <span class="self">Self</span>::new(<span class="prelude-val">None</span>)
     }
 }
 <span class="kw">impl </span>Into&lt;header::HeaderMap&gt; <span class="kw">for </span>Headers {
@@ -324,6 +352,10 @@
             (accept, header::ACCEPT),
             (accept_encoding, header::ACCEPT_ENCODING),
         );
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(token_str) = <span class="self">self</span>.authorization {
+            headers.insert(header::AUTHORIZATION, token_str.parse().unwrap());
+        }
 
         headers
     }

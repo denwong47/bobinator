@@ -79,6 +79,11 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
 </pre><pre class="rust"><code><span class="attr">#[allow(unused_imports)]
 </span><span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -141,8 +146,13 @@
     </span><span class="attr">#[serde(rename = <span class="string">&quot;sessionType&quot;</span>)]
     </span><span class="kw">pub </span>session_type: String, <span class="comment">// Convert to Enum if variants known
     </span><span class="kw">pub </span>state: String, <span class="comment">// Convert to Enum if variants known
-                       // pub is_logged_in_into_sandbox: bool,
-</span>}
+    // pub is_logged_in_into_sandbox: bool,
+
+    // Private fields.
+    </span><span class="doccomment">/// The timeoff requests for this employee.
+    </span><span class="attr">#[serde(skip)]
+    </span><span class="kw">pub </span>timeoff_requests: Vec&lt;Timeoff&gt;,
+}
 
 <span class="kw">impl </span>Employee {
     <span class="comment">// Temporary function to test functionality

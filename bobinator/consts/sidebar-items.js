@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["BOBINATOR_NAME",""],["BOB_LOGO",""],["EMAIL_PATTERN",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["BOBINATOR_NAME",""],["BOB_LOGO",""],["EMAIL_PATTERN",""],["PROMPT_FOR_ONE_TIME_TOKEN_FETCH","Not currently being used - our personal API tokens do NOT work with Webhooks."],["PROMPT_FOR_PASSWORD_LOGIN",""]]};

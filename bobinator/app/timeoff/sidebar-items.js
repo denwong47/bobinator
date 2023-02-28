@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["book_fridays_off","Book friday offs in sequence."]]};

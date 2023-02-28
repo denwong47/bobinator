@@ -73,22 +73,64 @@
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Functions to deal with the users API token.
 </span><span class="kw">use </span>std::fs;
 <span class="kw">use </span>std::path::Path;
 
 <span class="kw">use </span>reqwest::Client;
 
-<span class="attr">#[allow(unused_imports)]
-</span><span class="kw">use </span>conch;
-
 <span class="attr">#[cfg(feature = <span class="string">&quot;trace&quot;</span>)]
 </span><span class="kw">use </span>conch::StringWrapper;
 
 <span class="kw">use </span>bobinator_macros::leave_trace;
+<span class="kw">use </span>serde::Serialize;
 
-<span class="kw">use </span><span class="kw">super</span>::config;
-<span class="kw">use crate</span>::{bob, APIToken, APITokenScope, BobinatorError};
+<span class="kw">use super</span>::<span class="kw-2">*</span>;
+<span class="kw">use crate</span>::{bob, APIToken, APITokenOnly, APITokenScope, BobinatorError, Connection, HasToken};
 
 <span class="doccomment">/// Read the current path for API Token file.
 </span><span class="kw">fn </span>path&lt;<span class="lifetime">&#39;a</span>&gt;() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Path {
@@ -96,16 +138,28 @@
 }
 
 <span class="doccomment">/// Attempt to read a token from the present location.
-</span><span class="kw">pub fn </span>read_token() -&gt; <span class="prelude-ty">Result</span>&lt;String, BobinatorError&gt; {
+</span><span class="kw">pub fn </span>read_token() -&gt; <span class="prelude-ty">Result</span>&lt;APITokenOnly, BobinatorError&gt; {
     <span class="macro">leave_trace!</span>(<span class="string">&quot;Attempting to retrieve token from&quot; </span>| <span class="string">&quot;{}&quot;</span>, path().display());
-    fs::read_to_string(Path::new(path()))
+
+    fs::read_to_string(path())
+        .map(|token_str| {
+            <span class="macro">leave_trace!</span>(<span class="string">&quot;Token retrieved&quot; </span>| <span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>token_str);
+            APITokenOnly { token: token_str }
+        })
         .map_err(|io_err| BobinatorError::TokenReadError(config::API_TOKEN_PATH.clone(), io_err))
 }
 
 <span class="doccomment">/// Attempt to save a token to the present location.
-</span><span class="kw">pub fn </span>save_token(token: <span class="kw-2">&amp;</span>APIToken) -&gt; <span class="prelude-ty">Result</span>&lt;(), BobinatorError&gt; {
-    fs::write(path(), token.token.as_bytes()).map_err(|io_err| {
-        BobinatorError::TokenSaveError(config::API_TOKEN_PATH.clone(), io_err, token.token.clone())
+</span><span class="kw">pub fn </span>save_token(token: <span class="kw-2">&amp;</span>(<span class="kw">impl </span>Serialize + HasToken)) -&gt; <span class="prelude-ty">Result</span>&lt;(), BobinatorError&gt; {
+    <span class="macro">leave_trace!</span>(
+        <span class="string">&quot;Checking for configuration directory&quot; </span>| <span class="string">&quot;{}&quot;</span>,
+        config::API_CONFIG_PATH.as_str()
+    );
+    config::ensure_config_path_exists()<span class="question-mark">?</span>;
+
+    <span class="macro">leave_trace!</span>(<span class="string">&quot;Writing token to&quot; </span>| <span class="string">&quot;{}&quot;</span>, path().display());
+    fs::write(path(), token.key().as_bytes()).map_err(|io_err| {
+        BobinatorError::TokenSaveError(config::API_TOKEN_PATH.clone(), io_err, token.key())
     })
 }
 
@@ -128,7 +182,7 @@
     conn: <span class="kw-2">&amp;</span>Client,
     scopes: Vec&lt;APITokenScope&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;APIToken, BobinatorError&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>token = bob::get_token_scope(conn).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>token = bob::cookies::get_token_scope(conn).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="macro">leave_trace!</span>(<span class="string">&quot;Token retrieved&quot; </span>| <span class="string">&quot;{:?}&quot;</span>, token);
 
@@ -147,6 +201,40 @@
     <span class="macro">leave_trace!</span>(<span class="string">&quot;Saving Token to&quot; </span>| <span class="string">&quot;{}&quot;</span>, path().display());
 
     save_token(<span class="kw-2">&amp;</span>token).and(<span class="prelude-val">Ok</span>(token))
+}
+
+<span class="doccomment">/// Check the current machine for Token, if not found, perform a login.
+</span><span class="kw">pub async fn </span>get_token_or_login() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">impl </span>HasToken, BobinatorError&gt; {
+    <span class="comment">// We can&#39;t use `.map_or` here because `.or` is eagerly evaluated, whether
+    // Result is `Ok` or `Err`, meaning the user will be prompted to login
+    // regardless!
+    </span><span class="kw">match </span>read_token() {
+        <span class="prelude-val">Ok</span>(token) =&gt; {
+            <span class="macro">leave_trace!</span>(<span class="string">&quot;We have a token, no need to login&quot; </span>| <span class="string">&quot;{:?}&quot;</span>, <span class="kw-2">&amp;</span>token);
+            <span class="prelude-val">Ok</span>(token)
+        }
+        <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
+            <span class="macro">leave_trace!</span>(<span class="string">&quot;No token found&quot; </span>| <span class="string">&quot;We need to prompt user for login.&quot;</span>);
+            <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;API Token not found.\n&quot;</span>);
+
+            <span class="comment">// Temporary client with full login access
+            </span><span class="kw">let </span>conn = Connection::new(<span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+
+            <span class="kw">let </span>_employee = try_login(<span class="kw-2">&amp;</span>conn).<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="kw">let </span>token = fetch_update_and_store_token(
+                <span class="kw-2">&amp;</span>conn,
+                <span class="macro">vec!</span>[
+                    APITokenScope::FullEmployeeRead,
+                    APITokenScope::EmployeeFieldsRead,
+                    APITokenScope::Timeoff,
+                ],
+            )
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="prelude-val">Ok</span>(token.into())
+        }
+    }
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bobinator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.1 (d5a82bbd2 2023-02-07)" data-search-js="search-444266647c4dba98.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-af96d9e2fc13e081.css" ></div></body></html>

@@ -78,7 +78,7 @@
 <span class="kw">use crate</span>::{ApprovalState, DatePortion};
 
 <span class="attr">#[allow(unused_imports)]
-</span><span class="kw">use super</span>::{TimeoffPolicyType, TimeoffRequest};
+</span><span class="kw">use super</span>::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
 
 <span class="doccomment">/// A struct representing a single timeoff received from bob.
 </span><span class="attr">#[allow(dead_code)]
@@ -129,7 +129,7 @@
     </span><span class="kw">pub </span>reason_code_id: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
     <span class="attr">#[serde(rename = <span class="string">&quot;requestRangeType&quot;</span>)]
-    </span><span class="kw">pub </span>request_range_type: String,
+    </span><span class="kw">pub </span>request_range_type: RequestRangeType,
 
     <span class="attr">#[serde(rename = <span class="string">&quot;requestedBy&quot;</span>)]
     </span><span class="kw">pub </span>requested_by: String,

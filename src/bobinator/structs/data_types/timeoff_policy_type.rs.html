@@ -24,10 +24,12 @@
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
 <a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
 </pre><pre class="rust"><code><span class="kw">use </span>enum_index::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::fmt;
 
 <span class="doccomment">/// Policy Type for mapping the Holiday Balance.
-</span><span class="attr">#[derive(Debug, EnumIndex)]
+</span><span class="attr">#[derive(Clone, Debug, EnumIndex)]
 #[index_type(String)]
 </span><span class="kw">pub enum </span>TimeoffPolicyType {
     <span class="attr">#[index(<span class="string">&quot;Forestreet Annual Holiday Policy&quot;</span>)]
@@ -45,9 +47,9 @@
         <span class="self">Self</span>::AnnualLeave
     }
 }
-<span class="kw">impl </span>TimeoffPolicyType {
-    <span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="kw">return </span><span class="self">self</span>.index();
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>TimeoffPolicyType {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.index())
     }
 }
 </code></pre></div>
