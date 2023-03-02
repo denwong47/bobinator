@@ -14,9 +14,7 @@ async fn main() {
     drop(result.or_else(|err| {
         println!(
             "\nAn error has occurred: {}",
-            (conch::Modifier::colour("BrightYellow").unwrap()
-                + conch::Modifier::intensity("Bold").unwrap())
-            .wraps(&err.to_string())
+            consts::MODIFIER_WARNING.wraps(&err.to_string())
         );
 
         Err(err)

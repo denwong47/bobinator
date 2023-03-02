@@ -57,21 +57,13 @@ impl UserInput {
                         num if valid.contains(&num) => return Self::Integer(num),
                         num => println!(
                             "{}: {} {} {} {} {}",
-                            (conch::Modifier::colour("BrightYellow").unwrap()
-                                + conch::Modifier::intensity("Bold").unwrap())
-                            .wraps("Wrong input:"),
-                            (conch::Modifier::colour("BrightWhite").unwrap()
-                                + conch::Modifier::intensity("Bold").unwrap())
-                            .wraps(&num.to_string()),
+                            consts::MODIFIER_WARNING.wraps("Wrong input:"),
+                            consts::MODIFIER_EMPHASIS.wraps(&num.to_string()),
                             (conch::Modifier::colour("BrightWhite").unwrap())
                                 .wraps("is not a valid command; expected"),
-                            (conch::Modifier::colour("BrightWhite").unwrap()
-                                + conch::Modifier::intensity("Bold").unwrap())
-                            .wraps(&valid.start.to_string()),
+                            consts::MODIFIER_EMPHASIS.wraps(&valid.start.to_string()),
                             (conch::Modifier::colour("BrightWhite").unwrap()).wraps("to"),
-                            (conch::Modifier::colour("BrightWhite").unwrap()
-                                + conch::Modifier::intensity("Bold").unwrap())
-                            .wraps(&valid.end.to_string()),
+                            consts::MODIFIER_EMPHASIS.wraps(&valid.end.to_string()),
                         ),
                     }
                 } else {
@@ -83,18 +75,14 @@ impl UserInput {
 
                     println!(
                         "{}: {}",
-                        (conch::Modifier::colour("BrightYellow").unwrap()
-                            + conch::Modifier::intensity("Bold").unwrap())
-                        .wraps("Wrong input:"),
+                        consts::MODIFIER_WARNING.wraps("Wrong input:"),
                         (conch::Modifier::colour("BrightWhite").unwrap()).wraps("number expected.")
                     )
                 }
             } else {
                 println!(
                     "{}: {}",
-                    (conch::Modifier::colour("BrightYellow").unwrap()
-                        + conch::Modifier::intensity("Bold").unwrap())
-                    .wraps("I/O Error"),
+                    consts::MODIFIER_EMPHASIS.wraps("I/O Error"),
                     (conch::Modifier::colour("BrightWhite").unwrap())
                         .wraps(&result.unwrap_or_else(|err| err.to_string()))
                 )
@@ -158,12 +146,8 @@ impl UserInput {
                     } else {
                         println!(
                             "{} is not a valid {}, please try again.",
-                            (conch::Modifier::colour("BrightWhite").unwrap()
-                                + conch::Modifier::intensity("Bold").unwrap())
-                            .wraps(&input),
-                            (conch::Modifier::colour("BrightWhite").unwrap()
-                                + conch::Modifier::intensity("Bold").unwrap())
-                            .wraps("email"),
+                            consts::MODIFIER_EMPHASIS.wraps(&input),
+                            consts::MODIFIER_EMPHASIS.wraps("email"),
                         );
                     }
                 }

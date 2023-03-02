@@ -33,9 +33,8 @@ pub async fn menu(conn: &Client, employee: &Employee) -> Result<(), BobinatorErr
             UserInput::Integer(1) => {
                 println!(
                     "{}",
-                    (conch::Modifier::colour("BrightYellow").unwrap()
-                        + conch::Modifier::intensity("Bold").unwrap())
-                    .wraps("I told you, this does nothing.\nWhat do you expect?")
+                    consts::MODIFIER_WARNING
+                        .wraps("I told you, this does nothing.\nWhat do you expect?")
                         + "\n\nTry something else."
                 )
             }

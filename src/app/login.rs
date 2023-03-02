@@ -7,8 +7,7 @@ use crate::*;
 
 /// Prompt the user for email/password login.
 pub fn login_prompt() -> Result<(String, String), BobinatorError> {
-    let title_wrapper = conch::Modifier::colour("BrightWhite").unwrap()
-        + conch::Modifier::intensity("Bold").unwrap();
+    let title_wrapper = &consts::MODIFIER_EMPHASIS;
 
     let email_title = title_wrapper.wraps("Email");
     let password_title = title_wrapper.wraps("Password");

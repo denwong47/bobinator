@@ -11,9 +11,7 @@ pub async fn run() -> Result<(), BobinatorError> {
     println!("{}\n", consts::BOB_LOGO.as_str());
     println!(
         "{}{}.\n",
-        (conch::Modifier::colour("BrightWhite").unwrap()
-            + conch::Modifier::intensity("Bold").unwrap())
-        .wraps("Welcome to the "),
+        consts::MODIFIER_EMPHASIS.wraps("Welcome to the "),
         consts::BOBINATOR_NAME.as_str(),
     );
 
