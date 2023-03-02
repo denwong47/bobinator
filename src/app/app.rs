@@ -1,11 +1,10 @@
+use conch::StringWrapper;
+
 use crate::common::consts;
 use crate::Connection;
 use bobinator_models::structs::BobinatorError;
 
 use super::*;
-
-use conch;
-use conch::StringWrapper;
 
 /// Run the app in command line.
 pub async fn run() -> Result<(), BobinatorError> {
@@ -29,7 +28,7 @@ pub async fn run() -> Result<(), BobinatorError> {
     // let conn = Connection::new(Some(headers))?;
 
     let conn = Connection::new(None)?;
-    println!("{}", consts::PROMPT_FOR_PASSWORD_LOGIN.as_str());
+    println!("{}", consts::PROMPT_FOR_PASSWORD_LOGIN.to_string());
     let employee = try_login(&conn).await?;
 
     menu(&conn, &employee).await

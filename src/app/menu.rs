@@ -8,21 +8,20 @@ use crate::common::*;
 use crate::*;
 
 lazy_static! {
-    pub static ref MENU_PROMPT: String = (conch::Modifier::colour("BrightWhite").unwrap()
-        + conch::Modifier::intensity("Bold").unwrap())
-    .wraps("\u{2503} Menu\n")
-        + "\u{2502}\n"
-        + "\u{2502} 0 - Book Friday Offs\n"
-        + "\u{2502} 1 - Does nothing\n"
-        + "\u{2502}\n"
-        + "\u{2502} q - Exit";
+    pub static ref MENU_PROMPT: conch::Lines =
+        consts::STANDARD_LINES.clone().title("Menu").extend(vec![
+            "0 - Book Friday Offs",
+            "1 - Does nothing",
+            "",
+            "q - Exit",
+        ]);
     pub static ref PROMPT_FOR_COMMAND: String = String::from("\nEnter Command: [0-4, q] ");
 }
 
 /// Show main loop menu for commands.
 pub async fn menu(conn: &Client, employee: &Employee) -> Result<(), BobinatorError> {
     loop {
-        println!("\n{}", MENU_PROMPT.as_str());
+        println!("\n{}", MENU_PROMPT.to_string());
 
         match UserInput::for_command(PROMPT_FOR_COMMAND.as_str(), 0..2, usize::MAX, 'q').and_then(
             |input| {
