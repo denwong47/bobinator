@@ -188,22 +188,6 @@
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
 <a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::io::{<span class="self">self</span>, Write};
 <span class="kw">use </span>std::ops::Range;
 
@@ -263,21 +247,13 @@
                         num <span class="kw">if </span>valid.contains(<span class="kw-2">&amp;</span>num) =&gt; <span class="kw">return </span><span class="self">Self</span>::Integer(num),
                         num =&gt; <span class="macro">println!</span>(
                             <span class="string">&quot;{}: {} {} {} {} {}&quot;</span>,
-                            (conch::Modifier::colour(<span class="string">&quot;BrightYellow&quot;</span>).unwrap()
-                                + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-                            .wraps(<span class="string">&quot;Wrong input:&quot;</span>),
-                            (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-                                + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-                            .wraps(<span class="kw-2">&amp;</span>num.to_string()),
+                            consts::MODIFIER_WARNING.wraps(<span class="string">&quot;Wrong input:&quot;</span>),
+                            consts::MODIFIER_EMPHASIS.wraps(<span class="kw-2">&amp;</span>num.to_string()),
                             (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap())
                                 .wraps(<span class="string">&quot;is not a valid command; expected&quot;</span>),
-                            (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-                                + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-                            .wraps(<span class="kw-2">&amp;</span>valid.start.to_string()),
+                            consts::MODIFIER_EMPHASIS.wraps(<span class="kw-2">&amp;</span>valid.start.to_string()),
                             (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()).wraps(<span class="string">&quot;to&quot;</span>),
-                            (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-                                + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-                            .wraps(<span class="kw-2">&amp;</span>valid.end.to_string()),
+                            consts::MODIFIER_EMPHASIS.wraps(<span class="kw-2">&amp;</span>valid.end.to_string()),
                         ),
                     }
                 } <span class="kw">else </span>{
@@ -289,18 +265,14 @@
 
                     <span class="macro">println!</span>(
                         <span class="string">&quot;{}: {}&quot;</span>,
-                        (conch::Modifier::colour(<span class="string">&quot;BrightYellow&quot;</span>).unwrap()
-                            + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-                        .wraps(<span class="string">&quot;Wrong input:&quot;</span>),
+                        consts::MODIFIER_WARNING.wraps(<span class="string">&quot;Wrong input:&quot;</span>),
                         (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()).wraps(<span class="string">&quot;number expected.&quot;</span>)
                     )
                 }
             } <span class="kw">else </span>{
                 <span class="macro">println!</span>(
                     <span class="string">&quot;{}: {}&quot;</span>,
-                    (conch::Modifier::colour(<span class="string">&quot;BrightYellow&quot;</span>).unwrap()
-                        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-                    .wraps(<span class="string">&quot;I/O Error&quot;</span>),
+                    consts::MODIFIER_EMPHASIS.wraps(<span class="string">&quot;I/O Error&quot;</span>),
                     (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap())
                         .wraps(<span class="kw-2">&amp;</span>result.unwrap_or_else(|err| err.to_string()))
                 )
@@ -364,12 +336,8 @@
                     } <span class="kw">else </span>{
                         <span class="macro">println!</span>(
                             <span class="string">&quot;{} is not a valid {}, please try again.&quot;</span>,
-                            (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-                                + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-                            .wraps(<span class="kw-2">&amp;</span>input),
-                            (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-                                + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-                            .wraps(<span class="string">&quot;email&quot;</span>),
+                            consts::MODIFIER_EMPHASIS.wraps(<span class="kw-2">&amp;</span>input),
+                            consts::MODIFIER_EMPHASIS.wraps(<span class="string">&quot;email&quot;</span>),
                         );
                     }
                 }

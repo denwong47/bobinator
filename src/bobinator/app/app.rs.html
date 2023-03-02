@@ -31,26 +31,20 @@
 <a href="#31" id="31">31</a>
 <a href="#32" id="32">32</a>
 <a href="#33" id="33">33</a>
-<a href="#34" id="34">34</a>
-<a href="#35" id="35">35</a>
-<a href="#36" id="36">36</a>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::common::consts;
+</pre><pre class="rust"><code><span class="kw">use </span>conch::StringWrapper;
+
+<span class="kw">use </span><span class="kw">crate</span>::common::consts;
 <span class="kw">use </span><span class="kw">crate</span>::Connection;
 <span class="kw">use </span>bobinator_models::structs::BobinatorError;
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-<span class="kw">use </span>conch;
-<span class="kw">use </span>conch::StringWrapper;
 
 <span class="doccomment">/// Run the app in command line.
 </span><span class="kw">pub async fn </span>run() -&gt; <span class="prelude-ty">Result</span>&lt;(), BobinatorError&gt; {
     <span class="macro">println!</span>(<span class="string">&quot;{}\n&quot;</span>, consts::BOB_LOGO.as_str());
     <span class="macro">println!</span>(
         <span class="string">&quot;{}{}.\n&quot;</span>,
-        (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-            + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-        .wraps(<span class="string">&quot;Welcome to the &quot;</span>),
+        consts::MODIFIER_EMPHASIS.wraps(<span class="string">&quot;Welcome to the &quot;</span>),
         consts::BOBINATOR_NAME.as_str(),
     );
 
@@ -65,7 +59,7 @@
     // let conn = Connection::new(Some(headers))?;
 
     </span><span class="kw">let </span>conn = Connection::new(<span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-    <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, consts::PROMPT_FOR_PASSWORD_LOGIN.as_str());
+    <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, consts::PROMPT_FOR_PASSWORD_LOGIN.to_string());
     <span class="kw">let </span>employee = try_login(<span class="kw-2">&amp;</span>conn).<span class="kw">await</span><span class="question-mark">?</span>;
 
     menu(<span class="kw-2">&amp;</span>conn, <span class="kw-2">&amp;</span>employee).<span class="kw">await

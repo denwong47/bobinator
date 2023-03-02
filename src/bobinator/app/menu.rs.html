@@ -51,8 +51,6 @@
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
-<a href="#54" id="54">54</a>
-<a href="#55" id="55">55</a>
 </pre><pre class="rust"><code><span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>reqwest::Client;
 
@@ -63,21 +61,20 @@
 <span class="kw">use crate</span>::<span class="kw-2">*</span>;
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>MENU_PROMPT: String = (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-    .wraps(<span class="string">&quot;\u{2503} Menu\n&quot;</span>)
-        + <span class="string">&quot;\u{2502}\n&quot;
-        </span>+ <span class="string">&quot;\u{2502} 0 - Book Friday Offs\n&quot;
-        </span>+ <span class="string">&quot;\u{2502} 1 - Does nothing\n&quot;
-        </span>+ <span class="string">&quot;\u{2502}\n&quot;
-        </span>+ <span class="string">&quot;\u{2502} q - Exit&quot;</span>;
+    <span class="kw">pub static </span><span class="kw-2">ref </span>MENU_PROMPT: conch::Lines =
+        consts::STANDARD_LINES.clone().title(<span class="string">&quot;Menu&quot;</span>).extend(<span class="macro">vec!</span>[
+            <span class="string">&quot;0 - Book Friday Offs&quot;</span>,
+            <span class="string">&quot;1 - Does nothing&quot;</span>,
+            <span class="string">&quot;&quot;</span>,
+            <span class="string">&quot;q - Exit&quot;</span>,
+        ]);
     <span class="kw">pub static </span><span class="kw-2">ref </span>PROMPT_FOR_COMMAND: String = String::from(<span class="string">&quot;\nEnter Command: [0-4, q] &quot;</span>);
 }
 
 <span class="doccomment">/// Show main loop menu for commands.
 </span><span class="kw">pub async fn </span>menu(conn: <span class="kw-2">&amp;</span>Client, employee: <span class="kw-2">&amp;</span>Employee) -&gt; <span class="prelude-ty">Result</span>&lt;(), BobinatorError&gt; {
     <span class="kw">loop </span>{
-        <span class="macro">println!</span>(<span class="string">&quot;\n{}&quot;</span>, MENU_PROMPT.as_str());
+        <span class="macro">println!</span>(<span class="string">&quot;\n{}&quot;</span>, MENU_PROMPT.to_string());
 
         <span class="kw">match </span>UserInput::for_command(PROMPT_FOR_COMMAND.as_str(), <span class="number">0</span>..<span class="number">2</span>, usize::MAX, <span class="string">&#39;q&#39;</span>).and_then(
             |input| {
@@ -89,9 +86,8 @@
             UserInput::Integer(<span class="number">1</span>) =&gt; {
                 <span class="macro">println!</span>(
                     <span class="string">&quot;{}&quot;</span>,
-                    (conch::Modifier::colour(<span class="string">&quot;BrightYellow&quot;</span>).unwrap()
-                        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-                    .wraps(<span class="string">&quot;I told you, this does nothing.\nWhat do you expect?&quot;</span>)
+                    consts::MODIFIER_WARNING
+                        .wraps(<span class="string">&quot;I told you, this does nothing.\nWhat do you expect?&quot;</span>)
                         + <span class="string">&quot;\n\nTry something else.&quot;
                 </span>)
             }

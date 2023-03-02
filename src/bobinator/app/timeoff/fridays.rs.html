@@ -68,14 +68,17 @@
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
 <a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
 </pre><pre class="rust"><code><span class="kw">use </span>reqwest::Client;
 
 <span class="kw">use </span>bobinator_models::structs::BobinatorError;
 
-<span class="kw">use </span>conch;
-<span class="kw">use </span>conch::StringWrapper;
-
-<span class="kw">use </span><span class="kw">crate</span>::common::UserInput;
+<span class="kw">use </span><span class="kw">crate</span>::common::{consts, UserInput};
 <span class="kw">use crate</span>::{bob, Employee, FridayOff};
 
 <span class="doccomment">/// Book friday offs in sequence.
@@ -85,25 +88,34 @@
     <span class="kw">let </span>this_friday = FridayOff::this_week();
     <span class="kw">let </span>next_friday = FridayOff::next_week();
 
-    <span class="macro">println!</span>(
-        <span class="string">&quot;{}&quot;</span>,
-        (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-            + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-        .wraps(<span class="string">&quot;\u{2503} Let&#39;s book some Friday offs.&quot;</span>)
-    );
-
     <span class="kw">match </span>UserInput::for_command(
-        <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;\u{2502} Are you off on:\n\u{2502} \n\u{2502} 0 - this friday ({this_friday}), or\n\u{2502} 1 - next friday ({next_friday})?\n\nAnswer: [01 q] &quot;</span>),
+        <span class="kw-2">&amp;</span>consts::STANDARD_LINES
+            .clone()
+            .title(<span class="string">&quot;Let&#39;s book some Friday offs.&quot;</span>)
+            .extend(<span class="macro">vec!</span>[
+                <span class="string">&quot;Are you off on:&quot;</span>.to_owned(),
+                String::new(),
+                <span class="macro">format!</span>(<span class="string">&quot;0 - this friday ({this_friday})&quot;</span>),
+                <span class="macro">format!</span>(<span class="string">&quot;1 - next friday ({next_friday})?&quot;</span>),
+                String::new(),
+                <span class="string">&quot;Answer: [01 q] &quot;</span>.to_owned(),
+            ]),
         <span class="number">0</span>..<span class="number">2</span>,
-        usize::MAX, <span class="string">&#39;q&#39;
-    </span>) {
+        usize::MAX,
+        <span class="string">&#39;q&#39;</span>,
+    ) {
         UserInput::Integer(group) =&gt; {
             <span class="kw">let </span><span class="kw-2">mut </span>iter_friday = FridayOff::group_iter(group <span class="kw">as </span>usize);
 
             <span class="kw">loop </span>{
                 <span class="kw">let </span>cur_friday = iter_friday.next().unwrap();
 
-                <span class="kw">match </span>UserInput::for_choice(<span class="macro">format!</span>(<span class="string">&quot;Book Friday off on {cur_friday}? [Yn q] &quot;</span>), <span class="bool-val">true</span>, <span class="prelude-val">Some</span>(<span class="number">3</span>), <span class="string">&#39;q&#39;</span>) {
+                <span class="kw">match </span>UserInput::for_choice(
+                    <span class="macro">format!</span>(<span class="string">&quot;Book Friday off on {cur_friday}? [Yn q] &quot;</span>),
+                    <span class="bool-val">true</span>,
+                    <span class="prelude-val">Some</span>(<span class="number">3</span>),
+                    <span class="string">&#39;q&#39;</span>,
+                ) {
                     UserInput::Choice(<span class="bool-val">true</span>) =&gt; {
                         <span class="kw">let </span>result = bob::cookies::timeoff::make_friday_off_request(
                             conn, <span class="kw-2">&amp;</span>employee, cur_friday,
@@ -117,23 +129,23 @@
                             }
                             <span class="prelude-val">Err</span>(err) =&gt; <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, err),
                         }
-                    },
+                    }
                     UserInput::Choice(<span class="bool-val">false</span>) =&gt; <span class="macro">println!</span>(),
                     UserInput::RetriesExceeded =&gt; {
                         <span class="macro">println!</span>(<span class="string">&quot;Input not recognised.&quot;</span>);
-                        <span class="kw">break
-                    </span>}
+                        <span class="kw">break</span>;
+                    }
                     UserInput::Exit =&gt; {
                         <span class="macro">println!</span>(<span class="string">&quot;Aborted.&quot;</span>);
-                        <span class="kw">break
-                    </span>},
+                        <span class="kw">break</span>;
+                    }
                     <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
                 }
-            };
+            }
 
             ()
-        },
-        <span class="kw">_ </span>=&gt; ()
+        }
+        <span class="kw">_ </span>=&gt; (),
     }
 
     <span class="prelude-val">Ok</span>(())

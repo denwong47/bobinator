@@ -96,103 +96,115 @@
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
 <a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
 </pre><pre class="rust"><code><span class="kw">use </span>lazy_static::lazy_static;
 
 <span class="kw">use </span>regex::Regex;
 
 <span class="kw">use </span>conch;
-<span class="kw">use </span>conch::StringWrapper;
+<span class="kw">use </span>conch::{s, Lines, StringWrapper};
 
 <span class="kw">use </span><span class="kw">crate</span>::app::config;
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>BOBINATOR_NAME: String = (conch::Modifier::colour(<span class="string">&quot;BrightRed&quot;</span>).unwrap()
-        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-    .wraps(<span class="string">&quot;bob&quot;</span>)
-        + <span class="kw-2">&amp;</span>(conch::Modifier::colour(<span class="string">&quot;Grayscale13&quot;</span>).unwrap()
-            + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
-        .wraps(<span class="string">&quot;inator&quot;</span>);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>STANDARD_LINES: Lines =
+        Lines::new(<span class="macro">vec!</span>[])
+        .title_prefix(<span class="string">&quot;\u{2503} &quot;</span>)
+        .title_modifier(conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap() + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
+        .prefix(<span class="string">&quot;\u{2502} &quot;</span>)
+    ;
 
-    <span class="kw">pub static </span><span class="kw-2">ref </span>BOB_LOGO: String = (conch::Modifier::colour(<span class="string">&quot;BrightRed&quot;</span>).unwrap() + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()).wraps(
-<span class="string">&quot; ..
-!55Y.                                                .Y
-JP5P~                                                .5
-J55P^                                                .5
-J55P^                                                .5
-J55P^                                                .5
-J55P^  .^!7?JJ?7!^.                 .::^^:..         .5         ...
-J55P77YPPPPPPPPPPPPY7:          .~J5YJJ??JY5Y?^.     .5   .^~~~^^^^~~!~.
-J5555PP5?~:....:~?5PPPJ:      :JPY~.        :!5P7.   .5 .7!:          .~7^
-J55555!.           ~55PP~    !P5:              ~P5:  .57?.               ~?.
-J5555:              .555P^  ~PY.                :P5. .P?                  ^Y
-JP5P!                ~P5PJ  YP~                  ?P? .5.                   J^
-JP5P~                ^P55J  5P^                  7P? .5                    ?~
-~P55Y                J55P!  7PJ                 .5P^  ?~                  .5.
- ?P5PJ.            .JP5PJ    JP?               .YP7    J~                .J:
-  !5PP5?^.      .^?5PP5!      !55!.          .7P5^      !7:            .!7.
-   .75PPPP5YJJY5PPPP57.        .~Y5Y?!^^^~!?55J^          ^!~^:.....:~!~.
-      :~?Y555555Y?!:              .:~!7??7!^.                .::^^::.
-           ....                                                               &quot;
-    </span>);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>MODIFIER_EMPHASIS: conch::Modifier =
+        conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
+        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()
+    ;
+
+    <span class="kw">pub static </span><span class="kw-2">ref </span>MODIFIER_WARNING: conch::Modifier =
+        conch::Modifier::colour(<span class="string">&quot;BrightYellow&quot;</span>).unwrap()
+        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()
+    ;
+
+    <span class="kw">pub static </span><span class="kw-2">ref </span>BOBINATOR_NAME: String = <span class="macro">s!</span>(
+        ((conch::Modifier::colour(<span class="string">&quot;BrightRed&quot;</span>).unwrap()
+        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()).wraps(<span class="string">&quot;bob&quot;</span>))
+
+        ((conch::Modifier::colour(<span class="string">&quot;Grayscale13&quot;</span>).unwrap()
+        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()).wraps(<span class="string">&quot;inator&quot;</span>))
+    );
+
+    <span class="kw">pub static </span><span class="kw-2">ref </span>BOB_LOGO: String =
+        (conch::Modifier::colour(<span class="string">&quot;BrightRed&quot;</span>).unwrap()
+        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()).wraps(
+        <span class="kw-2">&amp;</span><span class="macro">s!</span>(
+            <span class="string">&quot; ..\n&quot;
+            &quot;!55Y.                                                .Y\n&quot;
+            &quot;JP5P~                                                .5\n&quot;
+            &quot;J55P^                                                .5\n&quot;
+            &quot;J55P^                                                .5\n&quot;
+            &quot;J55P^                                                .5\n&quot;
+            &quot;J55P^  .^!7?JJ?7!^.                 .::^^:..         .5         ...\n&quot;
+            &quot;J55P77YPPPPPPPPPPPPY7:          .~J5YJJ??JY5Y?^.     .5   .^~~~^^^^~~!~.\n&quot;
+            &quot;J5555PP5?~:....:~?5PPPJ:      :JPY~.        :!5P7.   .5 .7!:          .~7^\n&quot;
+            &quot;J55555!.           ~55PP~    !P5:              ~P5:  .57?.               ~?.\n&quot;
+            &quot;J5555:              .555P^  ~PY.                :P5. .P?                  ^Y\n&quot;
+            &quot;JP5P!                ~P5PJ  YP~                  ?P? .5.                   J^\n&quot;
+            &quot;JP5P~                ^P55J  5P^                  7P? .5                    ?~\n&quot;
+            &quot;~P55Y                J55P!  7PJ                 .5P^  ?~                  .5.\n&quot;
+            &quot; ?P5PJ.            .JP5PJ    JP?               .YP7    J~                .J:\n&quot;
+            &quot;  !5PP5?^.      .^?5PP5!      !55!.          .7P5^      !7:            .!7.\n&quot;
+            &quot;   .75PPPP5YJJY5PPPP57.        .~Y5Y?!^^^~!?55J^          ^!~^:.....:~!~.\n&quot;
+            &quot;      :~?Y555555Y?!:              .:~!7??7!^.                .::^^::.\n&quot;
+            &quot;           ....                                                               \n&quot;
+        </span>)
+    );
 
     <span class="kw">pub static </span><span class="kw-2">ref </span>EMAIL_PATTERN: Regex = Regex::new(
         <span class="string">r#&quot;(?i:[a-z0-9!#$%&amp;&#39;*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&amp;&#39;*+/=?^_`{|}~-]+)*|&quot;(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*&quot;)@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])&quot;#
     </span>).unwrap();
 
-    <span class="kw">pub static </span><span class="kw-2">ref </span>PROMPT_FOR_PASSWORD_LOGIN: String =
-        (
-            conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-            + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()
-        ).wraps(<span class="string">&quot;\u{2503} Why do I need to put in my username and password?&quot;</span>)
-        + <span class="string">&quot;\n\u{2502}\n\u{2502} In order to make requests on your behalf, &quot;
-        </span>+ BOBINATOR_NAME.as_str()
-        + <span class="string">&quot; simply login to your account\n&quot;
-        </span>+ <span class="string">&quot;\u{2502} as though you are using a browser, and perform the actions as you would manually.\n&quot;
-        </span>+ <span class="string">&quot;\u{2502}\n&quot;
-        </span>+ <span class="string">&quot;\u{2502} While bob can theoretically allow a &#39;service user&#39;, i.e. a robot account\n&quot;
-        </span>+ <span class="string">&quot;\u{2502} to cover the whole company, this is not currently setup, so we have to just do it \n&quot;
-        </span>+ <span class="string">&quot;\u{2502} on a personal level.\n\u{2502}\n&quot;
-        </span>+ <span class="string">&quot;\u{2502} &quot;
-        </span>+ BOBINATOR_NAME.as_str()
-        + <span class="string">&quot; does &quot;
-        </span>+ <span class="kw-2">&amp;</span>(
-            conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-            + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()
-        ).wraps(<span class="string">&quot;NOT&quot;</span>)
-        + <span class="string">&quot; store your login credentials; they are immediately discarded\n&quot;
-        </span>+ <span class="string">&quot;\u{2502} from memory upon sending of the login request.\n&quot;
-        </span>+ <span class="string">&quot;\u{2502} By the time &quot;
-        </span>+ BOBINATOR_NAME.as_str()
-        + <span class="string">&quot; receives a reply from the server, it would have \n&quot;
-        </span>+ <span class="string">&quot;\u{2502} forgotten your password already.&quot;</span>;
+    <span class="kw">pub static </span><span class="kw-2">ref </span>PROMPT_FOR_PASSWORD_LOGIN: Lines =
+        STANDARD_LINES
+        .clone()
+        .title(<span class="string">&quot;Why do I need to put in my username and password?&quot;</span>)
+        .extend(
+            <span class="macro">vec!</span>[
+                <span class="macro">format!</span>(<span class="string">&quot;In order to make requests on your behalf, {} simply login to your account&quot;</span>, BOBINATOR_NAME.as_str()),
+                <span class="string">&quot;as though you are using a browser, and perform the actions as you would manually.&quot;</span>.to_owned(),
+                <span class="string">&quot;While bob can theoretically allow a &#39;service user&#39;, i.e. a robot account&quot;</span>.to_owned(),
+                <span class="string">&quot;to cover the whole company, this is not currently setup, so we have to just do it&quot;</span>.to_owned(),
+                <span class="string">&quot;on a personal level.&quot;</span>.to_owned(),
+                String::new(),
+                <span class="macro">format!</span>(<span class="string">&quot;{} does NOT store your login credentials; they are immediately discarded&quot;</span>, BOBINATOR_NAME.as_str()),
+                <span class="string">&quot;from memory upon sending of the login request.&quot;</span>.to_owned(),
+                <span class="macro">format!</span>(<span class="string">&quot;By the time {} receives a reply from the server, it would have forgotten&quot;</span>, BOBINATOR_NAME.as_str()),
+                <span class="string">&quot;your password already.&quot;</span>.to_owned(),
+            ]
+        );
 
-        <span class="doccomment">/// Not currently being used - our personal API tokens do NOT work with Webhooks.
-        </span><span class="kw">pub static </span><span class="kw-2">ref </span>PROMPT_FOR_ONE_TIME_TOKEN_FETCH: String =
-        (
-            conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-            + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()
-        ).wraps(<span class="string">&quot;\u{2503} Why do I need to login?&quot;</span>)
-        + <span class="string">&quot;\n\u{2502}\n\u{2502} In order to make requests on your behalf, &quot;
-        </span>+ BOBINATOR_NAME.as_str()
-        + <span class="string">&quot; needs to have an API Token\n\u{2502} stored on your local machine. &quot;
-        </span>+ <span class="string">&quot;This token acts as a proof that you have granted permissions\n\u{2502}\n\u{2502} for &quot;
-        </span>+ BOBINATOR_NAME.as_str()
-        + <span class="string">&quot;to make changes.\n\u{2502}\n\u{2502} &quot;
-        </span>+ BOBINATOR_NAME.as_str()
-        + <span class="string">&quot; can obtain your API Token on your behalf, provided you login &quot;
-        </span>+ <span class="kw-2">&amp;</span>(
-            conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-            + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()
-        ).wraps(<span class="string">&quot;once&quot;</span>)
-        + <span class="string">&quot; below.\n\u{2502}\n\u{2502} &quot;
-        </span>+ <span class="string">&quot;Alternatively, you can copy your own API Token to the following file:\n\u{2502}   &quot;
-        </span>+ <span class="kw-2">&amp;</span>(
-            conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-            + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()
-        ).wraps(<span class="kw-2">&amp;</span>config::API_TOKEN_PATH)
-        + <span class="string">&quot;\n\u{2502} then restart &quot;
-        </span>+ BOBINATOR_NAME.as_str()
-        + <span class="string">&quot;.&quot;</span>;
+    <span class="doccomment">/// Not currently being used - our personal API tokens do NOT work with Webhooks.
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>PROMPT_FOR_ONE_TIME_TOKEN_FETCH: Lines =
+        STANDARD_LINES
+        .clone()
+        .title(<span class="string">&quot;Why do I need to login?&quot;</span>)
+        .extend(
+            <span class="macro">vec!</span>[
+                <span class="macro">format!</span>(<span class="string">&quot;In order to make requests on your behalf, {} needs to have an API Token&quot;</span>, BOBINATOR_NAME.as_str()),
+                <span class="string">&quot;stored on your local machine. This token acts as a proof that you have granted permissions&quot;</span>.to_owned(),
+                <span class="macro">format!</span>(<span class="string">&quot;for {} to make changes.&quot;</span>, BOBINATOR_NAME.as_str()),
+                String::new(),
+                <span class="macro">format!</span>(<span class="string">&quot;{} can obtain your API Token on your behalf, provided you login {} below.&quot;</span>, BOBINATOR_NAME.as_str(),
+                    MODIFIER_EMPHASIS.wraps(<span class="string">&quot;once&quot;</span>)
+                ),
+                <span class="string">&quot;Alternatively, you can copy your own API Token to the following file:&quot;</span>.to_owned(),
+                MODIFIER_EMPHASIS.wraps(<span class="kw-2">&amp;</span>config::API_TOKEN_PATH),
+                <span class="macro">format!</span>(<span class="string">&quot;and restart {}.&quot;</span>, BOBINATOR_NAME.as_str()),
+            ]
+        );
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bobinator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.1 (d5a82bbd2 2023-02-07)" data-search-js="search-444266647c4dba98.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-af96d9e2fc13e081.css" ></div></body></html>
