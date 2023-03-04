@@ -5,7 +5,7 @@ use std::iter::Iterator;
 macro_rules! expand_str_fields {
     ($($field:ident),+$(,)?) => {
         $(
-            #[doc = "Chained method for altering the [`"]
+            #[doc = "Chained method for altering the [`Self::"]
             #[doc = stringify!($field)]
             #[doc = "`] of a [`Headers`] instance."]
             pub fn $field<S>(mut self, value: S) -> Self
@@ -22,7 +22,7 @@ macro_rules! expand_str_fields {
 macro_rules! expand_vec_str_fields {
     ($($field:ident),+$(,)?) => {
         $(
-            #[doc = "Chained method for altering the [`"]
+            #[doc = "Chained method for altering the [`Self::"]
             #[doc = stringify!($field)]
             #[doc = "`] of a [`Headers`] instance."]
             pub fn $field<I, S>(mut self, value: I) -> Self
@@ -85,10 +85,11 @@ pub struct Headers {
     // sec_fetch_mode: String,
     // sec_fetch_site: String,
     te: String,
+    authorization: Option<String>,
 }
 impl Headers {
     /// Create a Headers with default settings, mimicking a Firefox on OS X.
-    pub fn new() -> Self {
+    pub fn new(authorization: Option<String>) -> Self {
         Self {
             user_agent: DEFAULT_USER_AGENT.to_string(),
             accept: DEFAULT_ACCEPT.clone(),
@@ -101,6 +102,7 @@ impl Headers {
             // sec_fetch_mode: String::from("cors"),
             // sec_fetch_site: String::from("same-origin"),
             te: DEFAULT_TE.to_string(),
+            authorization,
         }
     }
 
@@ -117,13 +119,23 @@ impl Headers {
     );
 
     expand_vec_str_fields!(accept, accept_encoding,);
+
+    /// Chained method for altering the [`Self::authorization`]
+    /// of a [`Headers`] instance.
+    pub fn authorization<S>(mut self, value: String) -> Self
+    where
+        S: ToString,
+    {
+        self.authorization = Some(value.to_string());
+        self
+    }
 }
 impl Default for Headers {
     /// Create a new [`Headers`] object with default values.
     ///
     /// Identical to [`Headers::new()`].
     fn default() -> Self {
-        Self::new()
+        Self::new(None)
     }
 }
 impl Into<header::HeaderMap> for Headers {
@@ -159,6 +171,10 @@ impl Into<header::HeaderMap> for Headers {
             (accept, header::ACCEPT),
             (accept_encoding, header::ACCEPT_ENCODING),
         );
+
+        if let Some(token_str) = self.authorization {
+            headers.insert(header::AUTHORIZATION, token_str.parse().unwrap());
+        }
 
         headers
     }

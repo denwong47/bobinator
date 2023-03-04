@@ -1,27 +1,36 @@
-use crate::*;
 use reqwest::{Client, StatusCode};
 
+use bobinator_macros::map_post_to_struct;
+use bobinator_models;
+
+use crate::*;
+
 /// Attempt to send a login request using the credentials provided.
+/// Stores cookie into the active Clients with full user permissions.
 pub async fn login(
     conn: &Client,
     email: String,
     password: String,
-) -> Result<Employee, BobinatorError> {
+) -> Result<LoginSession, BobinatorError> {
     let credentials = Credentials::new(email, password);
 
-    let req = conn
+    let fut = conn
         .post("https://app.hibob.com/api/login")
         .json(&credentials)
-        .send()
+        .send();
+
+    // Immediately discard the credentials to make good our promise.
+    drop(credentials);
+    let response = fut
         .await
         .map_err(|err| BobinatorError::ClientConnectionError(err))?;
 
-    let code = req.status();
+    let code = response.status();
 
     match code {
         StatusCode::UNAUTHORIZED => Err(BobinatorError::BobUnauthorised),
         StatusCode::OK => {
-            let employee = req
+            let employee = response
                 .json()
                 .await
                 .map_err(|de_err| BobinatorError::DataJSONDecodeError(de_err.to_string()))?;
@@ -32,28 +41,16 @@ pub async fn login(
     }
 }
 
-// Attempt to logout from a session.
+map_post_to_struct! (
+    _logout,
+    "Internal function to to logout from a session. Must be used in Clients with active cookie stored.",
+    "https://api.hibob.com/api/logout",
+    String,
+    text() -> String,
+);
+
+/// Attempt to logout from a session.
+/// Must be used in Clients with active cookie stored.
 pub async fn logout(conn: &Client) -> Result<(), BobinatorError> {
-    let req = conn
-        .post("https://api.hibob.com/api/logout")
-        .json("{}")
-        .send()
-        .await
-        .map_err(|err| BobinatorError::ClientConnectionError(err))?;
-
-    let code = req.status();
-
-    match code {
-        StatusCode::UNAUTHORIZED => Err(BobinatorError::BobUnauthorised),
-        StatusCode::OK => {
-            let text = req
-                .text()
-                .await
-                .map_err(|err| BobinatorError::ClientJSONDecodeError(err))?;
-
-            println!("{:?} {}", code, text);
-            Ok(())
-        }
-        code => Err(BobinatorError::ServerReturnedUnexpectedStatus(code)),
-    }
+    _logout(conn, String::from("{}")).await.and(Ok(()))
 }

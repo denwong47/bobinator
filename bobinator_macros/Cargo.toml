@@ -1,0 +1,16 @@
+[package]
+name = "bobinator_macros"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "bobinator_macros"
+
+[features]
+trace = ["bobinator_models/trace"]
+
+[dependencies]
+conch = { git = "https://github.com/denwong47/conch", branch = "development" }
+bobinator_models = { path = "../bobinator_models" }

@@ -1,14 +1,14 @@
 use enum_index::*;
 
-#[derive(Debug, EnumIndex)]
+#[derive(Clone, Debug, EnumIndex)]
 #[index_type(String)]
 pub enum DatePortion {
     #[index("all_day")]
     AllDay,
 
-    #[index("am")]
+    #[index("morning")]
     Morning,
 
-    #[index("pm")]
+    #[index("afternoon")]
     Afternoon,
 }
