@@ -1,7 +1,7 @@
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
-use crate::{ApprovalState, DatePortion};
+use crate::{ApprovalState, DatePortion, HasDate};
 
 #[allow(unused_imports)]
 use super::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
@@ -154,4 +154,10 @@ pub struct Timeoff {
 
     #[serde(default)]
     actions: Vec<String>,
+}
+
+impl HasDate for Timeoff {
+    fn date<'a>(&'a self) -> &'a NaiveDate {
+        &self.start_date
+    }
 }
