@@ -67,7 +67,7 @@
     conn: <span class="kw-2">&amp;</span>Client,
     email: String,
     password: String,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Employee, BobinatorError&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;LoginSession, BobinatorError&gt; {
     <span class="kw">let </span>credentials = Credentials::new(email, password);
 
     <span class="kw">let </span>fut = conn

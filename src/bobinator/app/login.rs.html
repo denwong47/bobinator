@@ -121,7 +121,7 @@
 <span class="doccomment">/// Issue a login request to bob.
 /// This is not a necessary step if we are using API Token. Only use this if you intend
 /// to use cookies with username and passwords.
-</span><span class="kw">pub async fn </span>try_login(conn: <span class="kw-2">&amp;</span>Client) -&gt; <span class="prelude-ty">Result</span>&lt;Employee, BobinatorError&gt; {
+</span><span class="kw">pub async fn </span>try_login(conn: <span class="kw-2">&amp;</span>Client) -&gt; <span class="prelude-ty">Result</span>&lt;LoginSession, BobinatorError&gt; {
     <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">3 </span>{
         <span class="kw">let </span>(email, password) = login_prompt()<span class="question-mark">?</span>;
         <span class="kw">let </span>result = bob::cookies::login(<span class="kw-2">&amp;</span>conn, email, password).<span class="kw">await</span>;

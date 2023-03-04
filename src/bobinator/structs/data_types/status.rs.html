@@ -35,12 +35,19 @@
 <a href="#35" id="35">35</a>
 <a href="#36" id="36">36</a>
 <a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
 </pre><pre class="rust"><code><span class="kw">use </span>conch;
 <span class="kw">use </span>conch::StringWrapper;
 <span class="kw">use </span>enum_index::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::fmt::Display;
 
-<span class="attr">#[derive(Debug, EnumIndex)]
+<span class="attr">#[derive(Debug, EnumIndex, PartialEq)]
 #[index_type(String)]
 </span><span class="kw">pub enum </span>ApprovalState {
     <span class="attr">#[index(<span class="string">&quot;approved&quot;</span>)]
@@ -51,6 +58,9 @@
 
     <span class="attr">#[index(<span class="string">&quot;rejected&quot;</span>)]
     </span>Rejected,
+
+    <span class="attr">#[index(<span class="string">&quot;canceled&quot;</span>)]
+    </span>Canceled,
 }
 <span class="kw">impl </span>Display <span class="kw">for </span>ApprovalState {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
@@ -66,6 +76,10 @@
             <span class="self">Self</span>::Rejected =&gt; {
                 conch::Modifier::background(<span class="string">&quot;BrightRed&quot;</span>).unwrap()
                     + conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
+            }
+            <span class="self">Self</span>::Canceled =&gt; {
+                conch::Modifier::background(<span class="string">&quot;Grayscale13&quot;</span>).unwrap()
+                    + conch::Modifier::colour(<span class="string">&quot;Grayscale02&quot;</span>).unwrap()
             }
         };
 

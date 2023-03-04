@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["cookies",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["api_token",""],["cookies",""]]};

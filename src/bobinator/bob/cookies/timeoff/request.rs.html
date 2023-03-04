@@ -84,7 +84,7 @@
 /// Must be used with cookies session.
 </span><span class="kw">pub async fn </span>make_request(
     conn: <span class="kw-2">&amp;</span>Client,
-    employee: <span class="kw-2">&amp;</span>Employee,
+    employee: <span class="kw-2">&amp;</span>LoginSession,
     request: TimeoffRequest,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;i64&gt;, BobinatorError&gt; {
     <span class="kw">let </span>result = _make_request_by_id(conn, employee.id.clone(), request);
@@ -96,7 +96,7 @@
 /// Must be used with cookies session.
 </span><span class="kw">pub async fn </span>make_friday_off_request(
     conn: <span class="kw-2">&amp;</span>Client,
-    employee: <span class="kw-2">&amp;</span>Employee,
+    employee: <span class="kw-2">&amp;</span>LoginSession,
     date: NaiveDate,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;i64&gt;, BobinatorError&gt; {
     <span class="kw">if </span>date.weekday() != Weekday::Fri {

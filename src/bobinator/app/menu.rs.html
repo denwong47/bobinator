@@ -50,7 +50,6 @@
 <a href="#50" id="50">50</a>
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
-<a href="#53" id="53">53</a>
 </pre><pre class="rust"><code><span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>reqwest::Client;
 
@@ -64,7 +63,8 @@
     <span class="kw">pub static </span><span class="kw-2">ref </span>MENU_PROMPT: conch::Lines =
         consts::STANDARD_LINES.clone().title(<span class="string">&quot;Menu&quot;</span>).extend(<span class="macro">vec!</span>[
             <span class="string">&quot;0 - Book Friday Offs&quot;</span>,
-            <span class="string">&quot;1 - Does nothing&quot;</span>,
+            <span class="string">&quot;1 - Timeoff Management&quot;</span>,
+            <span class="string">&quot;2 - Does nothing&quot;</span>,
             <span class="string">&quot;&quot;</span>,
             <span class="string">&quot;q - Exit&quot;</span>,
         ]);
@@ -72,7 +72,7 @@
 }
 
 <span class="doccomment">/// Show main loop menu for commands.
-</span><span class="kw">pub async fn </span>menu(conn: <span class="kw-2">&amp;</span>Client, employee: <span class="kw-2">&amp;</span>Employee) -&gt; <span class="prelude-ty">Result</span>&lt;(), BobinatorError&gt; {
+</span><span class="kw">pub async fn </span>menu(conn: <span class="kw-2">&amp;</span>Client, session: <span class="kw-2">&amp;</span>LoginSession) -&gt; <span class="prelude-ty">Result</span>&lt;(), BobinatorError&gt; {
     <span class="kw">loop </span>{
         <span class="macro">println!</span>(<span class="string">&quot;\n{}&quot;</span>, MENU_PROMPT.to_string());
 
@@ -82,14 +82,15 @@
                 input
             },
         ) {
-            UserInput::Integer(<span class="number">0</span>) =&gt; app::timeoff::book_fridays_off(conn, employee).<span class="kw">await</span><span class="question-mark">?</span>,
-            UserInput::Integer(<span class="number">1</span>) =&gt; {
+            UserInput::Integer(<span class="number">0</span>) =&gt; app::timeoff::book_fridays_off(conn, session).<span class="kw">await</span><span class="question-mark">?</span>,
+            UserInput::Integer(<span class="number">1</span>) =&gt; app::timeoff::timeoff_dashboard(conn, session).<span class="kw">await</span><span class="question-mark">?</span>,
+            UserInput::Integer(<span class="number">2</span>) =&gt; {
                 <span class="macro">println!</span>(
                     <span class="string">&quot;{}&quot;</span>,
                     consts::MODIFIER_WARNING
                         .wraps(<span class="string">&quot;I told you, this does nothing.\nWhat do you expect?&quot;</span>)
                         + <span class="string">&quot;\n\nTry something else.&quot;
-                </span>)
+                </span>);
             }
             UserInput::Integer(command) =&gt; <span class="macro">println!</span>(<span class="string">&quot;{} requested.&quot;</span>, command),
             UserInput::Exit =&gt; <span class="kw">break</span>,
@@ -99,10 +100,7 @@
         }
     }
 
-    bob::cookies::logout(conn).<span class="kw">await</span>.and_then(|v| {
-        <span class="macro">println!</span>(<span class="string">&quot;Logout successful.&quot;</span>);
-        <span class="prelude-val">Ok</span>(v)
-    })
+    <span class="prelude-val">Ok</span>(())
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bobinator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.1 (d5a82bbd2 2023-02-07)" data-search-js="search-444266647c4dba98.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-af96d9e2fc13e081.css" ></div></body></html>

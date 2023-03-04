@@ -186,7 +186,7 @@
 <span class="macro">macro_rules! </span>expand_str_fields {
     ($(<span class="macro-nonterminal">$field</span>:ident),+$(,)<span class="question-mark">?</span>) =&gt; {
         $(
-            <span class="attr">#[doc = <span class="string">&quot;Chained method for altering the [`&quot;</span>]
+            <span class="attr">#[doc = <span class="string">&quot;Chained method for altering the [`Self::&quot;</span>]
             #[doc = <span class="macro">stringify!</span>(<span class="macro-nonterminal">$field</span>)]
             #[doc = <span class="string">&quot;`] of a [`Headers`] instance.&quot;</span>]
             </span><span class="kw">pub fn </span><span class="macro-nonterminal">$field</span>&lt;S&gt;(<span class="kw-2">mut </span><span class="self">self</span>, value: S) -&gt; <span class="self">Self

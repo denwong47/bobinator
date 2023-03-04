@@ -79,12 +79,12 @@
 <span class="kw">use </span>bobinator_models::structs::BobinatorError;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::{consts, UserInput};
-<span class="kw">use crate</span>::{bob, Employee, FridayOff};
+<span class="kw">use crate</span>::{bob, FridayOff, LoginSession};
 
 <span class="doccomment">/// Book friday offs in sequence.
 ///
 /// Placeholder function, just to get it working. Needs tidying up.
-</span><span class="kw">pub async fn </span>book_fridays_off(conn: <span class="kw-2">&amp;</span>Client, employee: <span class="kw-2">&amp;</span>Employee) -&gt; <span class="prelude-ty">Result</span>&lt;(), BobinatorError&gt; {
+</span><span class="kw">pub async fn </span>book_fridays_off(conn: <span class="kw-2">&amp;</span>Client, session: <span class="kw-2">&amp;</span>LoginSession) -&gt; <span class="prelude-ty">Result</span>&lt;(), BobinatorError&gt; {
     <span class="kw">let </span>this_friday = FridayOff::this_week();
     <span class="kw">let </span>next_friday = FridayOff::next_week();
 
@@ -118,7 +118,7 @@
                 ) {
                     UserInput::Choice(<span class="bool-val">true</span>) =&gt; {
                         <span class="kw">let </span>result = bob::cookies::timeoff::make_friday_off_request(
-                            conn, <span class="kw-2">&amp;</span>employee, cur_friday,
+                            conn, <span class="kw-2">&amp;</span>session, cur_friday,
                         )
                         .<span class="kw">await</span>;
 

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["enquire_by_id","Enquire the details of an [`Employee`] for the current logged in employee by ID. Must be used with cookies session."]],"struct":[["EmployeeSummaryResponse","Placeholder struct to receive response from Employee endpoint."]]};
