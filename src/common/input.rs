@@ -163,10 +163,10 @@ impl UserInput {
     pub fn for_choice(
         prompt: impl ToString,
         default: bool,
-        retries: Option<usize>,
+        attempts: Option<usize>,
         exit_prompt: char,
     ) -> Self {
-        for _ in 0..retries.unwrap_or(1) {
+        for _ in 0..attempts.unwrap_or(1) {
             let result = prompt_text(prompt.to_string());
 
             if let Ok(input) = result {

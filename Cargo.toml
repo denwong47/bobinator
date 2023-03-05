@@ -29,5 +29,6 @@ reqwest = { version = "0", features = ["cookies", "json", "gzip"] }
 rpassword = { version = "7" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+termsize = { version = "0" }
 thiserror = { version = "1" }
 tokio = { version = "1", features = ["full"] }

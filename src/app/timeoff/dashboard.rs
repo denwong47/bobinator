@@ -1,22 +1,24 @@
 use std::ops::RangeInclusive;
 
 use chrono::offset::Local;
-use chrono::{Datelike, Duration, Month, Months, NaiveDate};
+use chrono::{Datelike, Duration, Month, Months};
 use num_traits::FromPrimitive;
-use reqwest::{Client, StatusCode};
+use reqwest::Client;
 
 use bobinator_macros::leave_trace;
 use bobinator_models::structs::BobinatorError;
 
-use conch::{
-    regions, CalendarMonth, IterRangeByDuration, Lines, Modifier, MoveCursor, StringWrapper,
-};
+use conch::{regions, CalendarMonth, IterRangeByDuration, Lines, StringWrapper};
 
-use crate::common::{consts, UserInput};
+use crate::common::{consts, flush_stdout, UserInput};
 use crate::{bob, ApprovalState, CalendarMonthShiftModifier, LoginSession, Timeoff};
 
 #[cfg(feature = "trace")]
 use conch::StringWrapper;
+
+// TESTING IMPORTS
+use std::thread::sleep;
+use std::time;
 
 /// A UI utility for timeoff booking and display.
 pub async fn timeoff_dashboard(
@@ -97,22 +99,29 @@ pub async fn timeoff_dashboard(
         timeoffs.iter().for_each(|timeoff| {
             let date = &timeoff.start_date;
 
-            calendar.week_number_of(date).map(|week_num| {
-                print!(
-                    "{}",
-                    calendar
-                        .shift_modifier_for(timeoff)
-                        .unwrap_or_default()
-                        .wraps(&format!(
-                            "{} {} #{}: {}",
-                            timeoff.policy_type_display_name.modifier().wraps(" "),
-                            timeoff.policy_type_display_name.to_string(),
-                            timeoff.id,
-                            timeoff.status,
-                        ))
-                )
-            });
-        })
+            calendar.shifted_print_for(
+                timeoff,
+                &format!(
+                    "{} {} #{}: {}",
+                    timeoff.policy_type_display_name.modifier().wraps(" "),
+                    timeoff.policy_type_display_name.to_string(),
+                    timeoff.id,
+                    timeoff.status,
+                ),
+            );
+        });
+
+        // Test input
+        for x in 0..3 {
+            calendar.wipe_line_for(&calendar.date);
+            calendar
+                // .shifted_print_for(&calendar.date, &format!("Waiting {} seconds", x));
+                .shifted_input_for(&calendar.date, || {
+                    UserInput::for_choice("Make a choice: [Ynq] ", true, Some(1), 'q')
+                });
+
+            sleep(time::Duration::from_secs(1));
+        }
     }
 
     leave_trace!("Exiting Timeoff Dashboard" | "loop ended.",);
