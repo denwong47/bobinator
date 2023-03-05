@@ -1,6 +1,5 @@
 use std::ops::RangeInclusive;
 
-use chrono::offset::Local;
 use chrono::{Datelike, Duration, Month, Months};
 use num_traits::FromPrimitive;
 use reqwest::Client;
@@ -8,17 +7,15 @@ use reqwest::Client;
 use bobinator_macros::leave_trace;
 use bobinator_models::structs::BobinatorError;
 
-use conch::{regions, CalendarMonth, IterRangeByDuration, Lines, StringWrapper};
+use conch::{regions, CalendarMonth, IterRangeByDuration, Lines, RegionMarker, StringWrapper};
 
-use crate::common::{consts, flush_stdout, UserInput};
-use crate::{bob, ApprovalState, CalendarMonthShiftModifier, LoginSession, Timeoff};
+use crate::common::consts;
+use crate::{bob, ApprovalState, CalendarMonthShiftModifier, HasDate, LoginSession, Timeoff};
+
+use super::menu;
 
 #[cfg(feature = "trace")]
 use conch::StringWrapper;
-
-// TESTING IMPORTS
-use std::thread::sleep;
-use std::time;
 
 /// A UI utility for timeoff booking and display.
 pub async fn timeoff_dashboard(
@@ -30,7 +27,9 @@ pub async fn timeoff_dashboard(
         session.display_name
     );
 
-    for month_count in 0..12 {
+    let mut command = menu::TimeoffMenuCommand::default();
+
+    while command != menu::TimeoffMenuCommand::Exit {
         // This block will print out something like:
         //
         // ┃ March 2023
@@ -41,8 +40,7 @@ pub async fn timeoff_dashboard(
         // │ 13 14 15 16 17 18 19     Friday Off #12886887:  approved
         // │ 20 21 22 23 24 25 26     Forestreet Annual Holiday Policy #12722326:  approved
         // │ 27 28 29 30 31           Forestreet Annual Holiday Policy #12722339:  approved
-        let today = Local::now().date_naive();
-        let from = today - Duration::days((today.day() - 1) as i64) + Months::new(month_count);
+        let from = *command.date();
 
         let timeoffs: Vec<Timeoff> = bob::cookies::timeoff::list_requests(
             conn,
@@ -111,19 +109,23 @@ pub async fn timeoff_dashboard(
             );
         });
 
-        // Test input
-        for x in 0..3 {
-            calendar.wipe_line_for(&calendar.date);
-            calendar
-                // .shifted_print_for(&calendar.date, &format!("Waiting {} seconds", x));
-                .shifted_input_for(&calendar.date, || {
-                    UserInput::for_choice("Make a choice: [Ynq] ", true, Some(1), 'q')
-                });
-
-            sleep(time::Duration::from_secs(1));
-        }
+        // Print menu prompt and do things.
+        command = timeoff_menu_for_month(conn, session, &calendar, &timeoffs).await?;
     }
 
     leave_trace!("Exiting Timeoff Dashboard" | "loop ended.",);
     Ok(())
+}
+
+/// Menu switcher for month of timeoffs.
+pub async fn timeoff_menu_for_month<Region>(
+    conn: &Client,
+    session: &LoginSession,
+    calendar: &CalendarMonth<Region>,
+    timeoffs: &Vec<Timeoff>,
+) -> Result<menu::TimeoffMenuCommand, BobinatorError>
+where
+    Region: RegionMarker,
+{
+    todo!()
 }

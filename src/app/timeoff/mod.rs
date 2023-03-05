@@ -3,3 +3,5 @@ pub use dashboard::*;
 
 mod fridays;
 pub use fridays::*;
+
+pub mod menu;
