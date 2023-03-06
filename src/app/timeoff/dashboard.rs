@@ -7,10 +7,10 @@ use reqwest::Client;
 use bobinator_macros::leave_trace;
 use bobinator_models::structs::BobinatorError;
 
-use conch::{regions, CalendarMonth, IterRangeByDuration, Lines, StringWrapper};
+use conch::{regions, CalendarMonth, IterRangeByDuration, Lines};
 
 use crate::common::consts;
-use crate::{bob, ApprovalState, CalendarMonthShiftModifier, HasDate, LoginSession, Timeoff};
+use crate::{bob, ApprovalState, HasDate, LoginSession, Timeoff};
 
 use super::TimeoffMenuCommand;
 
