@@ -1,7 +1,8 @@
 mod dashboard;
-pub use dashboard::*;
+pub(crate) use dashboard::*;
 
 mod fridays;
 pub use fridays::*;
 
-pub mod menu;
+mod command;
+pub(crate) use command::*;

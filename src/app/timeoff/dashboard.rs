@@ -7,18 +7,18 @@ use reqwest::Client;
 use bobinator_macros::leave_trace;
 use bobinator_models::structs::BobinatorError;
 
-use conch::{regions, CalendarMonth, IterRangeByDuration, Lines, RegionMarker, StringWrapper};
+use conch::{regions, CalendarMonth, IterRangeByDuration, Lines, StringWrapper};
 
 use crate::common::consts;
 use crate::{bob, ApprovalState, CalendarMonthShiftModifier, HasDate, LoginSession, Timeoff};
 
-use super::menu;
+use super::TimeoffMenuCommand;
 
 #[cfg(feature = "trace")]
 use conch::StringWrapper;
 
 /// A UI utility for timeoff booking and display.
-pub async fn timeoff_dashboard(
+pub(crate) async fn timeoff_dashboard(
     conn: &Client,
     session: &LoginSession,
 ) -> Result<(), BobinatorError> {
@@ -27,9 +27,9 @@ pub async fn timeoff_dashboard(
         session.display_name
     );
 
-    let mut command = menu::TimeoffMenuCommand::default();
+    let mut command = TimeoffMenuCommand::default();
 
-    while command != menu::TimeoffMenuCommand::Exit {
+    while command != TimeoffMenuCommand::Exit {
         // This block will print out something like:
         //
         // ┃ March 2023
@@ -93,39 +93,10 @@ pub async fn timeoff_dashboard(
 
         println!("\n{}", lines);
 
-        // Print out annotations for timeoffs.
-        timeoffs.iter().for_each(|timeoff| {
-            let date = &timeoff.start_date;
-
-            calendar.shifted_print_for(
-                timeoff,
-                &format!(
-                    "{} {} #{}: {}",
-                    timeoff.policy_type_display_name.modifier().wraps(" "),
-                    timeoff.policy_type_display_name.to_string(),
-                    timeoff.id,
-                    timeoff.status,
-                ),
-            );
-        });
-
         // Print menu prompt and do things.
-        command = timeoff_menu_for_month(conn, session, &calendar, &timeoffs).await?;
+        command = command.execute(conn, session, &calendar, &timeoffs).await?;
     }
 
     leave_trace!("Exiting Timeoff Dashboard" | "loop ended.",);
     Ok(())
-}
-
-/// Menu switcher for month of timeoffs.
-pub async fn timeoff_menu_for_month<Region>(
-    conn: &Client,
-    session: &LoginSession,
-    calendar: &CalendarMonth<Region>,
-    timeoffs: &Vec<Timeoff>,
-) -> Result<menu::TimeoffMenuCommand, BobinatorError>
-where
-    Region: RegionMarker,
-{
-    todo!()
 }
