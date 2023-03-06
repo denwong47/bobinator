@@ -1,5 +1,4 @@
-use conch::{CalendarMonth, Modifier, RegionMarker, StringWrapper};
-use termsize;
+use conch::{CalendarMonth, Clear, Modifier, RegionMarker, StringWrapper};
 
 use crate::{common, flush_stdout, HasDate, UserInput};
 
@@ -42,15 +41,9 @@ where
     /// This assumes that the current cursor is at the new line immediately after
     /// printing the calendar.
     fn wipe_line_for(&self, obj: &T) -> Option<()> {
-        let term_w = termsize::get().map(|size| size.cols).unwrap_or(60);
-
         self.shifted_print_for(
             obj,
-            &format!(
-                "{:len$}",
-                "",
-                len = (term_w as i32 - CALENDAR_WIDTH - 3) as usize
-            ),
+            Modifier::from(Clear::LineAfterCursor).to_string().as_str(),
         )
         .map(|_| {
             // Don't use `and` here because `and` is eagerly evaluated.

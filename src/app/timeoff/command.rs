@@ -5,16 +5,17 @@ use chrono::{Datelike, Duration, Months, NaiveDate};
 
 use reqwest::Client;
 
-use conch::{CalendarMonth, RegionMarker, StringWrapper};
+use conch::{CalendarMonth, RegionMarker};
 
 use crate::{
     BobinatorError,
-    CalendarMonthShiftModifier,
     HasDate,
     LoginSession,
     Timeoff,
     // common,
 };
+
+use super::display_timeoffs;
 
 #[cfg(feature = "trace")]
 use conch::StringWrapper;
@@ -59,8 +60,8 @@ macro_rules! expand_add_types {
                     let new_date = *self.date() + rhs;
 
                     match self {
-                        Self::BookFridaysOff(date, group) => Self::BookFridaysOff(new_date, group),
-                        Self::Display(date) => Self::Display(new_date),
+                        Self::BookFridaysOff(_, group) => Self::BookFridaysOff(new_date, group),
+                        Self::Display(_) => Self::Display(new_date),
                         Self::Exit => Self::Exit,
                     }
                 }
@@ -93,29 +94,7 @@ impl TimeoffMenuCommand {
             Self::BookFridaysOff(date, group) => {
                 todo!()
             }
-            Self::Display(date) => {
-                // Print out annotations for timeoffs.
-                timeoffs.iter().for_each(|timeoff| {
-                    let date = &timeoff.start_date;
-
-                    calendar.shifted_print_for(
-                        timeoff,
-                        &format!(
-                            "{} {} #{}: {}",
-                            timeoff.policy_type_display_name.modifier().wraps(" "),
-                            timeoff.policy_type_display_name.to_string(),
-                            timeoff.id,
-                            timeoff.status,
-                        ),
-                    );
-                });
-
-                if *date - Local::now().date_naive() >= Duration::days(365) {
-                    Ok(Self::Exit)
-                } else {
-                    Ok(self + Months::new(1))
-                }
-            }
+            Self::Display(date) => display_timeoffs(date, conn, session, calendar, timeoffs).await,
             Self::Exit => unreachable!(
                 "And Exit command was executed directly; this is only supported as a return value."
             ),
