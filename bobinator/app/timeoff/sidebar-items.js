@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["book_fridays_off","Book friday offs in sequence."],["timeoff_dashboard","A UI utility for timeoff booking and display."]]};
+window.SIDEBAR_ITEMS = {"fn":[["legacy_book_fridays_off","Book friday offs in sequence."]]};

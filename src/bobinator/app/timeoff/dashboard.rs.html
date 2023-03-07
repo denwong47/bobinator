@@ -100,32 +100,27 @@
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
-<a href="#103" id="103">103</a>
-<a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::ops::RangeInclusive;
 
-<span class="kw">use </span>chrono::offset::Local;
-<span class="kw">use </span>chrono::{Datelike, Duration, Month, Months, NaiveDate};
+<span class="kw">use </span>chrono::{Datelike, Duration, Month, Months};
 <span class="kw">use </span>num_traits::FromPrimitive;
-<span class="kw">use </span>reqwest::{Client, StatusCode};
+<span class="kw">use </span>reqwest::Client;
 
 <span class="kw">use </span>bobinator_macros::leave_trace;
 <span class="kw">use </span>bobinator_models::structs::BobinatorError;
 
-<span class="kw">use </span>conch::{
-    regions, CalendarMonth, IterRangeByDuration, Lines, Modifier, MoveCursor, StringWrapper,
-};
+<span class="kw">use </span>conch::{regions, CalendarMonth, IterRangeByDuration, Lines};
 
-<span class="kw">use </span><span class="kw">crate</span>::common::{consts, UserInput};
-<span class="kw">use crate</span>::{bob, ApprovalState, LoginSession, Timeoff};
+<span class="kw">use </span><span class="kw">crate</span>::common::consts;
+<span class="kw">use crate</span>::{bob, ApprovalState, HasDate, LoginSession, Timeoff};
+
+<span class="kw">use </span><span class="kw">super</span>::TimeoffMenuCommand;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;trace&quot;</span>)]
 </span><span class="kw">use </span>conch::StringWrapper;
 
 <span class="doccomment">/// A UI utility for timeoff booking and display.
-</span><span class="kw">pub async fn </span>timeoff_dashboard(
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>timeoff_dashboard(
     conn: <span class="kw-2">&amp;</span>Client,
     session: <span class="kw-2">&amp;</span>LoginSession,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), BobinatorError&gt; {
@@ -134,9 +129,20 @@
         session.display_name
     );
 
-    <span class="kw">for </span>month_count <span class="kw">in </span><span class="number">0</span>..<span class="number">12 </span>{
-        <span class="kw">let </span>today = Local::now().date_naive();
-        <span class="kw">let </span>from = today - Duration::days((today.day() - <span class="number">1</span>) <span class="kw">as </span>i64) + Months::new(month_count);
+    <span class="kw">let </span><span class="kw-2">mut </span>command = TimeoffMenuCommand::default();
+
+    <span class="kw">while </span>command != TimeoffMenuCommand::Exit {
+        <span class="comment">// This block will print out something like:
+        //
+        // ┃ March 2023
+        // │
+        // │  M  T  W  T  F  S  S
+        // │        1  2  3  4  5     Friday Off #12505775:  approved
+        // │  6  7  8  9 10 11 12     Friday Off #13092905:  canceled
+        // │ 13 14 15 16 17 18 19     Friday Off #12886887:  approved
+        // │ 20 21 22 23 24 25 26     Forestreet Annual Holiday Policy #12722326:  approved
+        // │ 27 28 29 30 31           Forestreet Annual Holiday Policy #12722339:  approved
+        </span><span class="kw">let </span>from = <span class="kw-2">*</span>command.date();
 
         <span class="kw">let </span>timeoffs: Vec&lt;Timeoff&gt; = bob::cookies::timeoff::list_requests(
             conn,
@@ -153,7 +159,9 @@
             from + Months::new(<span class="number">1</span>)
         );
 
-        <span class="kw">let </span>calendar = timeoffs
+        <span class="comment">// Set up [`CalendarMonth`]  instance and inject the timeoffs into its `decorated_days`.
+        // This is setup using [`Iterator::fold()`] starting with a blank [`CalendarMonth`].
+        </span><span class="kw">let </span>calendar = timeoffs
             .iter()
             .filter(
                 <span class="comment">// Remove any timeoffs that had been rejected or canceled
@@ -173,7 +181,8 @@
                 },
             );
 
-        <span class="kw">let </span>lines: Lines = consts::STANDARD_LINES
+        <span class="comment">// Convert the calendar to [`Lines`], then print it first.
+        </span><span class="kw">let </span>lines: Lines = consts::STANDARD_LINES
             .clone()
             .title(<span class="macro">format!</span>(
                 <span class="string">&quot;{} {}&quot;</span>,
@@ -186,25 +195,8 @@
 
         <span class="macro">println!</span>(<span class="string">&quot;\n{}&quot;</span>, lines);
 
-        timeoffs.iter().for_each(|timeoff| {
-            <span class="kw">let </span>date = <span class="kw-2">&amp;</span>timeoff.start_date;
-
-            calendar.week_number_of(date).map(|week_num| {
-                <span class="macro">print!</span>(
-                    <span class="string">&quot;{}&quot;</span>,
-                    (Modifier::MoveCursor(MoveCursor::Up(
-                        (calendar.weeks_count() - week_num) <span class="kw">as </span>i32
-                    )) + Modifier::MoveCursor(MoveCursor::Right(<span class="number">25</span>)))
-                    .wraps(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-                        <span class="string">&quot;{} {} #{}: {}&quot;</span>,
-                        timeoff.policy_type_display_name.modifier().wraps(<span class="string">&quot; &quot;</span>),
-                        timeoff.policy_type_display_name.to_string(),
-                        timeoff.id,
-                        timeoff.status,
-                    ))
-                )
-            });
-        })
+        <span class="comment">// Print menu prompt and do things.
+        </span>command = command.execute(conn, session, <span class="kw-2">&amp;</span>calendar, <span class="kw-2">&amp;</span>timeoffs).<span class="kw">await</span><span class="question-mark">?</span>;
     }
 
     <span class="macro">leave_trace!</span>(<span class="string">&quot;Exiting Timeoff Dashboard&quot; </span>| <span class="string">&quot;loop ended.&quot;</span>,);

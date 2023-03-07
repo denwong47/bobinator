@@ -18,10 +18,31 @@
 <a href="#18" id="18">18</a>
 <a href="#19" id="19">19</a>
 <a href="#20" id="20">20</a>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::DatePortion;
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+</pre><pre class="rust"><code><span class="kw">use </span>std::ops::RangeInclusive;
+
 <span class="kw">use </span>::serde;
 <span class="kw">use </span>chrono::NaiveDate;
 <span class="kw">use </span>enum_index::<span class="kw-2">*</span>;
+
+<span class="kw">use </span><span class="kw">super</span>::DatePortion;
+<span class="kw">use crate</span>::{HasDate, HasDateRange};
 
 <span class="attr">#[derive(Debug, EnumIndex)]
 #[index_type(String)]
@@ -37,6 +58,19 @@
     <span class="kw">pub </span>end_date: NaiveDate,
     <span class="kw">pub </span>end_portion: DatePortion,
     <span class="kw">pub </span>kind: DateRangeType,
+}
+
+<span class="kw">impl </span>HasDate <span class="kw">for </span>DateRange {
+    <span class="kw">fn </span>date&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>NaiveDate {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.start_date
+    }
+}
+
+<span class="kw">impl </span>HasDateRange <span class="kw">for </span>DateRange {
+    <span class="doccomment">/// Return the date range it represents as a [`RangeInclusive&lt;NaiveDate&gt;`].
+    </span><span class="kw">fn </span>date_range&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; RangeInclusive&lt;NaiveDate&gt; {
+        RangeInclusive::new(<span class="self">self</span>.start_date, <span class="self">self</span>.end_date)
+    }
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="bobinator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.1 (d5a82bbd2 2023-02-07)" data-search-js="search-444266647c4dba98.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-af96d9e2fc13e081.css" ></div></body></html>

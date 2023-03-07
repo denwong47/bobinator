@@ -84,10 +84,34 @@
 <a href="#84" id="84">84</a>
 <a href="#85" id="85">85</a>
 <a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
 </pre><pre class="rust"><code><span class="kw">use </span>chrono::offset::Local;
 <span class="kw">use </span>chrono::{Duration, NaiveDate, Weekday};
 
-<span class="kw">use </span><span class="kw">crate</span>::BobinatorError;
+<span class="kw">use crate</span>::{BobinatorError, HasDate};
 
 <span class="doccomment">/// A struct grouping together staticmethods about Fridays.
 </span><span class="kw">pub struct </span>WeekdayInterval&lt;<span class="kw">const </span>D: usize, <span class="kw">const </span>G: usize&gt; {}
@@ -114,12 +138,21 @@
         current_week.first_day() + Duration::days(D <span class="kw">as </span>i64)
     }
 
-    <span class="kw">pub fn </span>next_in_group(group: usize) -&gt; NaiveDate {
-        <span class="self">Self</span>::this_week() + Duration::weeks(group <span class="kw">as </span>i64)
+    <span class="kw">pub fn </span>next_in_group(group: usize, start_date: <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>HasDate&gt;) -&gt; NaiveDate {
+        <span class="kw">let </span>coming_in_group = <span class="self">Self</span>::this_week() + Duration::weeks(group <span class="kw">as </span>i64);
+
+        start_date
+            .map(|date| {
+                <span class="kw">let </span>date_diff = <span class="kw-2">*</span>date.date() - coming_in_group;
+                <span class="kw">let </span>weeks_to_add = (date_diff.num_days() <span class="kw">as </span>f64 / <span class="number">7. </span>/ G <span class="kw">as </span>f64).ceil() <span class="kw">as </span>i64;
+
+                coming_in_group + Duration::weeks(weeks_to_add * G <span class="kw">as </span>i64)
+            })
+            .unwrap_or(coming_in_group)
     }
 
     <span class="kw">pub fn </span>next_week() -&gt; NaiveDate {
-        <span class="self">Self</span>::next_in_group(<span class="number">1</span>)
+        <span class="self">Self</span>::next_in_group(<span class="number">1</span>, <span class="prelude-ty">Option</span>::&lt;NaiveDate&gt;::None)
     }
 
     <span class="doccomment">/// Return the group number of a date.
@@ -130,13 +163,17 @@
     /// For example, for [`WeekdayInterval&lt;4, 2&gt;`] (Friday, fortnightly), then this
     /// Friday (whether past or future) will be group 0. Next Friday will be group 1.
     /// The Friday after will be group 0 etc.
-    </span><span class="kw">pub fn </span>get_group(date: NaiveDate) -&gt; <span class="prelude-ty">Result</span>&lt;usize, BobinatorError&gt; {
-        <span class="kw">let </span>date_diff = (date - <span class="self">Self</span>::this_week()).num_days();
+    </span><span class="kw">pub fn </span>get_group&lt;T&gt;(date: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;usize, BobinatorError&gt;
+    <span class="kw">where
+        </span>T: HasDate,
+    {
+        <span class="kw">let </span>date = date.date();
+        <span class="kw">let </span>date_diff = (<span class="kw-2">*</span>date - <span class="self">Self</span>::this_week()).num_days();
 
         <span class="kw">if </span>date_diff % <span class="number">7 </span>&gt; <span class="number">0 </span>{
             <span class="comment">// Its not the correct weekday
             </span><span class="prelude-val">Err</span>(BobinatorError::IncorrectWeekday(
-                date,
+                date.clone(),
                 <span class="self">Self</span>::weekday().to_string(),
             ))
         } <span class="kw">else </span>{
@@ -144,10 +181,21 @@
         }
     }
 
+    <span class="doccomment">/// Placeholder method, to do a poll among all supplied items and guess the most
+    /// probable group that the items belong to.
+    </span><span class="kw">pub fn </span>guess_group&lt;I, T&gt;(items: I) -&gt; <span class="prelude-ty">Result</span>&lt;usize, BobinatorError&gt;
+    <span class="kw">where
+        </span>I: Iterator&lt;Item = T&gt;,
+        T: HasDate,
+    {
+        drop(items);
+        <span class="macro">todo!</span>()
+    }
+
     <span class="doccomment">/// Return an iterator of each Weekday belonging to the specified group.
-    </span><span class="kw">pub fn </span>group_iter(group: usize) -&gt; WeekdayIntervalIter&lt;D, G&gt; {
+    </span><span class="kw">pub fn </span>group_iter(group: usize, start_date: <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>HasDate&gt;) -&gt; WeekdayIntervalIter&lt;D, G&gt; {
         WeekdayIntervalIter::&lt;D, G&gt; {
-            date: <span class="self">Self</span>::next_in_group(group),
+            date: <span class="self">Self</span>::next_in_group(group, start_date),
         }
     }
 }

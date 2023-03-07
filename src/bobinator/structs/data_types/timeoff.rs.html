@@ -155,10 +155,94 @@
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
-</pre><pre class="rust"><code><span class="kw">use </span>chrono::NaiveDate;
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+</pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::ops::RangeInclusive;
+
+<span class="kw">use </span>chrono::NaiveDate;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">use crate</span>::{ApprovalState, DatePortion};
+<span class="kw">use </span>conch::{ContainsDate, StringWrapper};
+
+<span class="kw">use crate</span>::{consts, ApprovalState, DatePortion, HasDate, HasDateRange};
 
 <span class="attr">#[allow(unused_imports)]
 </span><span class="kw">use super</span>::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
@@ -311,6 +395,80 @@
 
     <span class="attr">#[serde(default)]
     </span>actions: Vec&lt;String&gt;,
+}
+
+<span class="kw">impl </span>HasDate <span class="kw">for </span>Timeoff {
+    <span class="kw">fn </span>date&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>NaiveDate {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.start_date
+    }
+}
+
+<span class="kw">impl </span>HasDateRange <span class="kw">for </span>Timeoff {
+    <span class="doccomment">/// Return the date range it represents as a [`RangeInclusive&lt;NaiveDate&gt;`].
+    </span><span class="kw">fn </span>date_range&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; RangeInclusive&lt;NaiveDate&gt; {
+        RangeInclusive::new(<span class="self">self</span>.start_date, <span class="self">self</span>.end_date)
+    }
+}
+
+<span class="kw">impl </span>ContainsDate <span class="kw">for </span><span class="kw-2">&amp;</span>Timeoff {
+    <span class="doccomment">/// Check if a date is within the time off.
+    </span><span class="kw">fn </span>contains(<span class="kw-2">&amp;</span><span class="self">self</span>, date: <span class="kw-2">&amp;</span>NaiveDate) -&gt; bool {
+        <span class="self">self</span>.date_range().contains(date)
+    }
+}
+
+<span class="kw">impl </span>ContainsDate <span class="kw">for </span>Timeoff {
+    <span class="doccomment">/// Check if a date is within the time off.
+    </span><span class="kw">fn </span>contains(<span class="kw-2">&amp;</span><span class="self">self</span>, date: <span class="kw-2">&amp;</span>NaiveDate) -&gt; bool {
+        <span class="self">self</span>.date_range().contains(date)
+    }
+}
+
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>Timeoff {
+    <span class="comment">// Generate a time off description like:
+    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="kw">let </span>range_description: String = <span class="kw">if </span><span class="self">self</span>.start_date == <span class="self">self</span>.end_date
+            &amp;&amp; <span class="self">self</span>.start_date_portion == DatePortion::AllDay
+            &amp;&amp; <span class="self">self</span>.end_date_portion == DatePortion::AllDay
+        {
+            <span class="comment">// One day, full day.
+            </span><span class="self">self</span>.start_date.format(<span class="string">&quot;%d/%m&quot;</span>).to_string()
+        } <span class="kw">else </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>s = <span class="self">self</span>.start_date.format(<span class="string">&quot;%d/%m&quot;</span>).to_string();
+
+            <span class="comment">// Add AM/PM if needed.
+            </span><span class="kw">if </span><span class="self">self</span>.start_date_portion != DatePortion::AllDay {
+                s.push(<span class="string">&#39; &#39;</span>);
+                s.push_str(<span class="kw-2">&amp;</span><span class="self">self</span>.start_date_portion.to_string());
+            }
+
+            s.push(<span class="string">&#39;-&#39;</span>);
+
+            <span class="comment">// If the end date is different, print it.
+            </span><span class="kw">if </span><span class="self">self</span>.start_date != <span class="self">self</span>.end_date {
+                s.push_str(<span class="kw-2">&amp;</span><span class="self">self</span>.end_date.format(<span class="string">&quot;%d/%m&quot;</span>).to_string());
+            }
+
+            <span class="comment">// Add AM/PM if needed.
+            </span><span class="kw">if </span><span class="self">self</span>.end_date_portion != DatePortion::AllDay {
+                <span class="kw">if </span><span class="self">self</span>.start_date != <span class="self">self</span>.end_date {
+                    s.push(<span class="string">&#39; &#39;</span>)
+                }
+
+                s.push_str(<span class="kw-2">&amp;</span><span class="self">self</span>.end_date_portion.to_string());
+            }
+
+            s
+        };
+
+        <span class="macro">write!</span>(
+            f,
+            <span class="string">&quot;{} {} {}&quot;</span>,
+            <span class="self">self</span>.policy_type_display_name.modifier().wraps(<span class="string">&quot; &quot;</span>),
+            consts::MODIFIER_EMPHASIS.wraps(<span class="kw-2">&amp;</span>range_description),
+            <span class="self">self</span>.policy_type_display_name.short_name()
+        )
+    }
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="bobinator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.1 (d5a82bbd2 2023-02-07)" data-search-js="search-444266647c4dba98.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-af96d9e2fc13e081.css" ></div></body></html>

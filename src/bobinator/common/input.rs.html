@@ -236,10 +236,10 @@
     </span><span class="kw">pub fn </span>for_command(
         prompt: <span class="kw">impl </span>ToString,
         valid: Range&lt;u64&gt;,
-        retries: usize,
+        attempts: usize,
         exit_prompt: char,
     ) -&gt; <span class="self">Self </span>{
-        <span class="kw">for _ in </span><span class="number">0</span>..retries {
+        <span class="kw">for _ in </span><span class="number">0</span>..attempts {
             <span class="kw">let </span>result = prompt_text(prompt.to_string());
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
                 <span class="kw">if let </span><span class="prelude-val">Ok</span>(num) = input.parse::&lt;u64&gt;() {
@@ -286,9 +286,9 @@
     </span><span class="kw">pub fn </span>for_password(
         prompt: <span class="kw">impl </span>ToString,
         expects: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
-        retries: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+        attempts: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     ) -&gt; <span class="self">Self </span>{
-        <span class="kw">for _ in </span><span class="number">0</span>..retries.unwrap_or(<span class="number">1</span>) {
+        <span class="kw">for _ in </span><span class="number">0</span>..attempts.unwrap_or(<span class="number">1</span>) {
             <span class="kw">let </span>result = prompt_password(prompt.to_string());
 
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
@@ -323,8 +323,8 @@
     }
 
     <span class="doccomment">/// Prompt for email.
-    </span><span class="kw">pub fn </span>for_email(prompt: <span class="kw">impl </span>ToString, retries: usize) -&gt; <span class="self">Self </span>{
-        <span class="kw">for _ in </span><span class="number">0</span>..retries {
+    </span><span class="kw">pub fn </span>for_email(prompt: <span class="kw">impl </span>ToString, attempts: usize) -&gt; <span class="self">Self </span>{
+        <span class="kw">for _ in </span><span class="number">0</span>..attempts {
             <span class="kw">let </span>result = prompt_text(prompt.to_string());
 
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
@@ -353,10 +353,10 @@
     </span><span class="kw">pub fn </span>for_choice(
         prompt: <span class="kw">impl </span>ToString,
         default: bool,
-        retries: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+        attempts: <span class="prelude-ty">Option</span>&lt;usize&gt;,
         exit_prompt: char,
     ) -&gt; <span class="self">Self </span>{
-        <span class="kw">for _ in </span><span class="number">0</span>..retries.unwrap_or(<span class="number">1</span>) {
+        <span class="kw">for _ in </span><span class="number">0</span>..attempts.unwrap_or(<span class="number">1</span>) {
             <span class="kw">let </span>result = prompt_text(prompt.to_string());
 
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
