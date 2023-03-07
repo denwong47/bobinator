@@ -76,7 +76,7 @@ lazy_static! {
                 "on a personal level.".to_owned(),
                 String::new(),
                 format!("{} does NOT store your login credentials; they are immediately discarded", BOBINATOR_NAME.as_str()),
-                "from memory upon sending of the login request.".to_owned(),
+                "from memory upon sending the login request.".to_owned(),
                 format!("By the time {} receives a reply from the server, it would have forgotten", BOBINATOR_NAME.as_str()),
                 "your password already.".to_owned(),
             ]

@@ -1,25 +1,24 @@
 use std::ops::RangeInclusive;
 
-use chrono::offset::Local;
-use chrono::{Datelike, Duration, Month, Months, NaiveDate};
+use chrono::{Datelike, Duration, Month, Months};
 use num_traits::FromPrimitive;
-use reqwest::{Client, StatusCode};
+use reqwest::Client;
 
 use bobinator_macros::leave_trace;
 use bobinator_models::structs::BobinatorError;
 
-use conch::{
-    regions, CalendarMonth, IterRangeByDuration, Lines, Modifier, MoveCursor, StringWrapper,
-};
+use conch::{regions, CalendarMonth, IterRangeByDuration, Lines};
 
-use crate::common::{consts, UserInput};
-use crate::{bob, ApprovalState, LoginSession, Timeoff};
+use crate::common::consts;
+use crate::{bob, ApprovalState, HasDate, LoginSession, Timeoff};
+
+use super::TimeoffMenuCommand;
 
 #[cfg(feature = "trace")]
 use conch::StringWrapper;
 
 /// A UI utility for timeoff booking and display.
-pub async fn timeoff_dashboard(
+pub(crate) async fn timeoff_dashboard(
     conn: &Client,
     session: &LoginSession,
 ) -> Result<(), BobinatorError> {
@@ -28,9 +27,20 @@ pub async fn timeoff_dashboard(
         session.display_name
     );
 
-    for month_count in 0..12 {
-        let today = Local::now().date_naive();
-        let from = today - Duration::days((today.day() - 1) as i64) + Months::new(month_count);
+    let mut command = TimeoffMenuCommand::default();
+
+    while command != TimeoffMenuCommand::Exit {
+        // This block will print out something like:
+        //
+        // ┃ March 2023
+        // │
+        // │  M  T  W  T  F  S  S
+        // │        1  2  3  4  5     Friday Off #12505775:  approved
+        // │  6  7  8  9 10 11 12     Friday Off #13092905:  canceled
+        // │ 13 14 15 16 17 18 19     Friday Off #12886887:  approved
+        // │ 20 21 22 23 24 25 26     Forestreet Annual Holiday Policy #12722326:  approved
+        // │ 27 28 29 30 31           Forestreet Annual Holiday Policy #12722339:  approved
+        let from = *command.date();
 
         let timeoffs: Vec<Timeoff> = bob::cookies::timeoff::list_requests(
             conn,
@@ -47,6 +57,8 @@ pub async fn timeoff_dashboard(
             from + Months::new(1)
         );
 
+        // Set up [`CalendarMonth`]  instance and inject the timeoffs into its `decorated_days`.
+        // This is setup using [`Iterator::fold()`] starting with a blank [`CalendarMonth`].
         let calendar = timeoffs
             .iter()
             .filter(
@@ -67,6 +79,7 @@ pub async fn timeoff_dashboard(
                 },
             );
 
+        // Convert the calendar to [`Lines`], then print it first.
         let lines: Lines = consts::STANDARD_LINES
             .clone()
             .title(format!(
@@ -80,25 +93,8 @@ pub async fn timeoff_dashboard(
 
         println!("\n{}", lines);
 
-        timeoffs.iter().for_each(|timeoff| {
-            let date = &timeoff.start_date;
-
-            calendar.week_number_of(date).map(|week_num| {
-                print!(
-                    "{}",
-                    (Modifier::MoveCursor(MoveCursor::Up(
-                        (calendar.weeks_count() - week_num) as i32
-                    )) + Modifier::MoveCursor(MoveCursor::Right(25)))
-                    .wraps(&format!(
-                        "{} {} #{}: {}",
-                        timeoff.policy_type_display_name.modifier().wraps(" "),
-                        timeoff.policy_type_display_name.to_string(),
-                        timeoff.id,
-                        timeoff.status,
-                    ))
-                )
-            });
-        })
+        // Print menu prompt and do things.
+        command = command.execute(conn, session, &calendar, &timeoffs).await?;
     }
 
     leave_trace!("Exiting Timeoff Dashboard" | "loop ended.",);

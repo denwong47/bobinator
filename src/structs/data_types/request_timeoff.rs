@@ -1,6 +1,7 @@
-use super::{DatePortion, RequestRangeType, TimeoffPolicyType};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
+
+use crate::{DatePortion, HasDate, RequestRangeType, TimeoffPolicyType};
 
 /// Construct a JSON for requesting time off.
 ///
@@ -41,4 +42,10 @@ pub struct TimeoffRequest {
 
     #[serde(rename = "reasonCode")]
     pub reason_code: Option<i64>,
+}
+
+impl HasDate for TimeoffRequest {
+    fn date<'a>(&'a self) -> &'a NaiveDate {
+        &self.start_date
+    }
 }

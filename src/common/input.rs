@@ -46,10 +46,10 @@ impl UserInput {
     pub fn for_command(
         prompt: impl ToString,
         valid: Range<u64>,
-        retries: usize,
+        attempts: usize,
         exit_prompt: char,
     ) -> Self {
-        for _ in 0..retries {
+        for _ in 0..attempts {
             let result = prompt_text(prompt.to_string());
             if let Ok(input) = result {
                 if let Ok(num) = input.parse::<u64>() {
@@ -96,9 +96,9 @@ impl UserInput {
     pub fn for_password(
         prompt: impl ToString,
         expects: Option<&str>,
-        retries: Option<usize>,
+        attempts: Option<usize>,
     ) -> Self {
-        for _ in 0..retries.unwrap_or(1) {
+        for _ in 0..attempts.unwrap_or(1) {
             let result = prompt_password(prompt.to_string());
 
             if let Ok(input) = result {
@@ -133,8 +133,8 @@ impl UserInput {
     }
 
     /// Prompt for email.
-    pub fn for_email(prompt: impl ToString, retries: usize) -> Self {
-        for _ in 0..retries {
+    pub fn for_email(prompt: impl ToString, attempts: usize) -> Self {
+        for _ in 0..attempts {
             let result = prompt_text(prompt.to_string());
 
             if let Ok(input) = result {
@@ -163,10 +163,10 @@ impl UserInput {
     pub fn for_choice(
         prompt: impl ToString,
         default: bool,
-        retries: Option<usize>,
+        attempts: Option<usize>,
         exit_prompt: char,
     ) -> Self {
-        for _ in 0..retries.unwrap_or(1) {
+        for _ in 0..attempts.unwrap_or(1) {
             let result = prompt_text(prompt.to_string());
 
             if let Ok(input) = result {

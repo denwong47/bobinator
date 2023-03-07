@@ -36,4 +36,12 @@ impl TimeoffPolicyType {
                 Self::SickLeave => Modifier::background("R2G0B0").unwrap(),
             }
     }
+
+    pub fn short_name(&self) -> &str {
+        match self {
+            Self::AnnualLeave => "annual leave",
+            Self::SickLeave => "sick leave",
+            Self::FridayOff => "friday off",
+        }
+    }
 }
