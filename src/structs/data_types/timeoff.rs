@@ -1,7 +1,11 @@
+use std::fmt;
+
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
-use crate::{ApprovalState, DatePortion, HasDate};
+use conch::StringWrapper;
+
+use crate::{consts, ApprovalState, DatePortion, HasDate};
 
 #[allow(unused_imports)]
 use super::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
@@ -159,5 +163,52 @@ pub struct Timeoff {
 impl HasDate for Timeoff {
     fn date<'a>(&'a self) -> &'a NaiveDate {
         &self.start_date
+    }
+}
+
+impl fmt::Display for Timeoff {
+    // Generate a time off description like:
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let range_description: String = if self.start_date == self.end_date
+            && self.start_date_portion == DatePortion::AllDay
+            && self.end_date_portion == DatePortion::AllDay
+        {
+            // One day, full day.
+            self.start_date.format("%d/%m").to_string()
+        } else {
+            let mut s = self.start_date.format("%d/%m").to_string();
+
+            // Add AM/PM if needed.
+            if self.start_date_portion != DatePortion::AllDay {
+                s.push(' ');
+                s.push_str(&self.start_date_portion.to_string());
+            }
+
+            s.push('-');
+
+            // If the end date is different, print it.
+            if self.start_date != self.end_date {
+                s.push_str(&self.end_date.format("%d/%m").to_string());
+            }
+
+            // Add AM/PM if needed.
+            if self.end_date_portion != DatePortion::AllDay {
+                if self.start_date != self.end_date {
+                    s.push(' ')
+                }
+
+                s.push_str(&self.end_date_portion.to_string());
+            }
+
+            s
+        };
+
+        write!(
+            f,
+            "{} {} {}",
+            self.policy_type_display_name.modifier().wraps(" "),
+            consts::MODIFIER_EMPHASIS.wraps(&range_description),
+            self.policy_type_display_name.short_name()
+        )
     }
 }

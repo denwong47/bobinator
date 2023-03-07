@@ -1,12 +1,13 @@
 use reqwest::Client;
 
+use chrono::{Months, NaiveDate};
+use conch::{CalendarMonth, Clear, Modifier, RegionMarker};
+
 use super::command::TimeoffMenuCommand;
 use crate::{
-    consts, flush_stdout, BobinatorError, CalendarMonthShiftModifier, LoginSession, Timeoff,
-    UserInput,
+    consts, flush_stdout, ApprovalState, BobinatorError, CalendarMonthShiftModifier, FridayOff,
+    LoginSession, Timeoff, UserInput,
 };
-use chrono::{Months, NaiveDate};
-use conch::{CalendarMonth, Clear, Modifier, RegionMarker, StringWrapper};
 
 #[allow(unused_variables)]
 pub(crate) async fn display_timeoffs<Region>(
@@ -19,25 +20,33 @@ pub(crate) async fn display_timeoffs<Region>(
 where
     Region: RegionMarker,
 {
-    timeoffs.iter().for_each(|timeoff| {
-        calendar.shifted_print_for(
-            timeoff,
-            &format!(
-                "{} {} #{}: {}",
-                timeoff.policy_type_display_name.modifier().wraps(" "),
-                timeoff.policy_type_display_name.to_string(),
-                timeoff.id,
-                timeoff.status,
-            ),
-        );
-    });
+    timeoffs
+        .iter()
+        .filter(
+            // Remove any timeoffs that had been rejected or canceled
+            |timeoff| {
+                timeoff.status == ApprovalState::Approved
+                    || timeoff.status == ApprovalState::Pending
+            },
+        )
+        .for_each(|timeoff| {
+            calendar.shifted_print_for(timeoff, &timeoff.to_string());
+        });
 
     let lines = consts::STANDARD_LINES
         .clone()
         .title("What would you like to do?")
         .extend(vec![
-            "0: Book all friday offs (Group 0)",
-            "1: Book all friday offs (Group 1)",
+            format!(
+                "0: Book all friday offs (Group of this week {})",
+                FridayOff::this_week().format("%d/%m")
+            )
+            .as_str(),
+            format!(
+                "1: Book all friday offs (Group of next week {})",
+                FridayOff::next_week().format("%d/%m")
+            )
+            .as_str(),
             "2: Previous Month",
             "3: Next Month",
             "q: Exit",
