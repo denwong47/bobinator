@@ -10,7 +10,7 @@ use crate::*;
 lazy_static! {
     pub static ref MENU_PROMPT: conch::Lines =
         consts::STANDARD_LINES.clone().title("Menu").extend(vec![
-            "0 - Book Friday Offs",
+            "0 - Book Friday Offs (LEGACY MODE)",
             "1 - Timeoff Management",
             "2 - Does nothing",
             "",
@@ -30,7 +30,7 @@ pub async fn menu(conn: &Client, session: &LoginSession) -> Result<(), Bobinator
                 input
             },
         ) {
-            UserInput::Integer(0) => app::timeoff::book_fridays_off(conn, session).await?,
+            UserInput::Integer(0) => app::timeoff::legacy_book_fridays_off(conn, session).await?,
             UserInput::Integer(1) => app::timeoff::timeoff_dashboard(conn, session).await?,
             UserInput::Integer(2) => {
                 println!(

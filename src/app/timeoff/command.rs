@@ -15,7 +15,7 @@ use crate::{
     // common,
 };
 
-use super::display_timeoffs;
+use super::{book_fridays_off, display_timeoffs};
 
 #[cfg(feature = "trace")]
 use conch::StringWrapper;
@@ -23,7 +23,7 @@ use conch::StringWrapper;
 /// Internal enum for the return value of [`timeoff_menu_for_month`].
 #[derive(Debug, PartialEq)]
 pub(crate) enum TimeoffMenuCommand {
-    BookFridaysOff(NaiveDate, i32),
+    BookFridaysOff(NaiveDate, usize),
     Display(NaiveDate),
     Exit,
 }
@@ -92,7 +92,7 @@ impl TimeoffMenuCommand {
     {
         match &self {
             Self::BookFridaysOff(date, group) => {
-                todo!()
+                book_fridays_off(date, conn, *group, session, calendar, timeoffs).await
             }
             Self::Display(date) => display_timeoffs(date, conn, session, calendar, timeoffs).await,
             Self::Exit => unreachable!(

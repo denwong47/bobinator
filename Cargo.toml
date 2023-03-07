@@ -21,6 +21,7 @@ conch = { git = "https://github.com/denwong47/conch", branch = "development", fe
 chrono = { version = "0", features = ["serde"] }
 directories = { version = "4" }
 enum_index = { git = "https://github.com/denwong47/enum_index", branch = "development" }
+futures = { version = "0" }
 lazy_static = "1"
 num-traits = { version = "0" }
 rayon = "1"
@@ -29,6 +30,5 @@ reqwest = { version = "0", features = ["cookies", "json", "gzip"] }
 rpassword = { version = "7" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-termsize = { version = "0" }
 thiserror = { version = "1" }
 tokio = { version = "1", features = ["full"] }

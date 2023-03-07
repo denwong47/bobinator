@@ -1,14 +1,17 @@
 use reqwest::Client;
 
-use bobinator_models::structs::BobinatorError;
-
-use crate::common::{consts, UserInput};
-use crate::{bob, FridayOff, LoginSession};
+use super::command::TimeoffMenuCommand;
+use crate::{bob, consts, BobinatorError, FridayOff, LoginSession, Timeoff, UserInput};
+use chrono::NaiveDate;
+use conch::{CalendarMonth, RegionMarker};
 
 /// Book friday offs in sequence.
 ///
 /// Placeholder function, just to get it working. Needs tidying up.
-pub async fn book_fridays_off(conn: &Client, session: &LoginSession) -> Result<(), BobinatorError> {
+pub async fn legacy_book_fridays_off(
+    conn: &Client,
+    session: &LoginSession,
+) -> Result<(), BobinatorError> {
     let this_friday = FridayOff::this_week();
     let next_friday = FridayOff::next_week();
 
@@ -73,4 +76,21 @@ pub async fn book_fridays_off(conn: &Client, session: &LoginSession) -> Result<(
     }
 
     Ok(())
+}
+
+/// Book friday offs for a certain month.
+#[allow(unused_variables)]
+pub(crate) async fn book_fridays_off<Region>(
+    date: &NaiveDate,
+    conn: &Client,
+    group: usize,
+    session: &LoginSession,
+    calendar: &CalendarMonth<Region>,
+    timeoffs: &Vec<Timeoff>,
+) -> Result<TimeoffMenuCommand, BobinatorError>
+where
+    Region: RegionMarker,
+{
+    todo!("Booking Fridays Off through dashboard is not currently supported.")
+    // futures::future::join_all(get_player_futures).await;
 }
