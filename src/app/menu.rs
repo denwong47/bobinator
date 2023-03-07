@@ -11,7 +11,7 @@ lazy_static! {
         .clone()
         .title("Main Menu")
         .extend(vec!["0 - Timeoff Management", "", "q - Exit",]);
-    pub static ref PROMPT_FOR_COMMAND: String = String::from("\nEnter Command: [0-4, q] ");
+    pub static ref PROMPT_FOR_COMMAND: String = String::from("\nEnter Command: [0, q] ");
 }
 
 /// Show main loop menu for commands.
