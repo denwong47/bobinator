@@ -1,9 +1,11 @@
 use reqwest::Client;
 
 use super::command::TimeoffMenuCommand;
-use crate::{bob, consts, BobinatorError, FridayOff, LoginSession, Timeoff, UserInput};
+use crate::{
+    bob, consts, ApprovalState, BobinatorError, FridayOff, LoginSession, Timeoff, UserInput,
+};
 use chrono::NaiveDate;
-use conch::{CalendarMonth, RegionMarker};
+use conch::{CalendarMonth, ContainsDateMut, RegionMarker};
 
 /// Book friday offs in sequence.
 ///
@@ -91,6 +93,18 @@ pub(crate) async fn book_fridays_off<Region>(
 where
     Region: RegionMarker,
 {
+    println!(
+        "{}",
+        ContainsDateMut::contains(
+            &mut timeoffs.iter().filter(|timeoff| [
+                ApprovalState::Approved,
+                ApprovalState::Pending
+            ]
+            .contains(&timeoff.status)),
+            &NaiveDate::from_ymd_opt(2023, 3, 10).unwrap()
+        )
+    );
+
     todo!("Booking Fridays Off through dashboard is not currently supported.")
     // futures::future::join_all(get_player_futures).await;
 }

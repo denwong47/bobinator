@@ -1,11 +1,12 @@
 use std::fmt;
+use std::ops::RangeInclusive;
 
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
-use conch::StringWrapper;
+use conch::{ContainsDate, StringWrapper};
 
-use crate::{consts, ApprovalState, DatePortion, HasDate};
+use crate::{consts, ApprovalState, DatePortion, HasDate, HasDateRange};
 
 #[allow(unused_imports)]
 use super::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
@@ -163,6 +164,27 @@ pub struct Timeoff {
 impl HasDate for Timeoff {
     fn date<'a>(&'a self) -> &'a NaiveDate {
         &self.start_date
+    }
+}
+
+impl HasDateRange for Timeoff {
+    /// Return the date range it represents as a [`RangeInclusive<NaiveDate>`].
+    fn date_range<'a>(&'a self) -> RangeInclusive<NaiveDate> {
+        RangeInclusive::new(self.start_date, self.end_date)
+    }
+}
+
+impl ContainsDate for &Timeoff {
+    /// Check if a date is within the time off.
+    fn contains(&self, date: &NaiveDate) -> bool {
+        self.date_range().contains(date)
+    }
+}
+
+impl ContainsDate for Timeoff {
+    /// Check if a date is within the time off.
+    fn contains(&self, date: &NaiveDate) -> bool {
+        self.date_range().contains(date)
     }
 }
 
