@@ -32,6 +32,6 @@ serde_json = "1"
 thiserror = { version = "1" }
 tokio = { version = "1", features = ["full"] }
 
-# For Cross Compilation
-openssl = { features = ["vendored"] }
-openssl-sys = { features = ["vendored"] }
+[profile.release]
+strip = true
+opt-level = "z"
