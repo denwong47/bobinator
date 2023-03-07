@@ -25,10 +25,10 @@ map_post_to_struct! (
 /// Must be used with cookies session.
 pub async fn make_request(
     conn: &Client,
-    employee: &LoginSession,
+    session: &LoginSession,
     request: TimeoffRequest,
 ) -> Result<Option<i64>, BobinatorError> {
-    let result = _make_request_by_id(conn, employee.id.clone(), request);
+    let result = _make_request_by_id(conn, session.id.clone(), request);
 
     result.await.map(|res| res.id)
 }
@@ -37,7 +37,7 @@ pub async fn make_request(
 /// Must be used with cookies session.
 pub async fn make_friday_off_request(
     conn: &Client,
-    employee: &LoginSession,
+    session: &LoginSession,
     date: NaiveDate,
 ) -> Result<Option<i64>, BobinatorError> {
     if date.weekday() != Weekday::Fri {
@@ -55,5 +55,5 @@ pub async fn make_friday_off_request(
         reason_code: None,
     };
 
-    make_request(conn, employee, request).await
+    make_request(conn, session, request).await
 }

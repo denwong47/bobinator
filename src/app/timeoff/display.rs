@@ -5,8 +5,8 @@ use conch::{CalendarMonth, Clear, Modifier, RegionMarker};
 
 use super::command::TimeoffMenuCommand;
 use crate::{
-    consts, flush_stdout, ApprovalState, BobinatorError, CalendarMonthShiftModifier, FridayOff,
-    LoginSession, Timeoff, UserInput,
+    consts, flush_stdout, ApprovalState, BobinatorError, CalendarMonthShiftModifier, LoginSession,
+    Timeoff, UserInput,
 };
 
 #[allow(unused_variables)]
@@ -37,52 +37,37 @@ where
         .clone()
         .title("What would you like to do?")
         .extend(vec![
-            format!(
-                "0: Book all friday offs (Group of this week {})",
-                FridayOff::this_week().format("%d/%m")
-            )
-            .as_str(),
-            format!(
-                "1: Book all friday offs (Group of next week {})",
-                FridayOff::next_week().format("%d/%m")
-            )
-            .as_str(),
-            "2: Previous Month",
-            "3: Next Month",
+            "0: Book friday offs",
+            "1: Previous Month",
+            "2: Next Month",
             "q: Exit",
         ]);
 
     flush_stdout();
     println!("\n{}\n", lines);
-    let input = UserInput::for_command("Enter Command: [0-3, q] ", 0..4, 1, 'q');
+    let input = UserInput::for_command("Enter Command: [0-2, q] ", 0..3, 1, 'q');
 
     Ok(match input {
         UserInput::Integer(0) => {
             print!(
                 "{}",
-                Modifier::up(10) + Modifier::from(Clear::DisplayBelowCursor)
+                Modifier::up(9 + calendar.weeks_count() as i32 + 4)
+                    + Modifier::from(Clear::DisplayBelowCursor)
             );
-            TimeoffMenuCommand::BookFridaysOff(*date, 0)
+            TimeoffMenuCommand::BookFridaysOff(*date, None)
         }
         UserInput::Integer(1) => {
             print!(
                 "{}",
-                Modifier::up(10) + Modifier::from(Clear::DisplayBelowCursor)
-            );
-            TimeoffMenuCommand::BookFridaysOff(*date, 1)
-        }
-        UserInput::Integer(2) => {
-            print!(
-                "{}",
-                Modifier::up(10 + calendar.weeks_count() as i32 + 4)
+                Modifier::up(9 + calendar.weeks_count() as i32 + 4)
                     + Modifier::from(Clear::DisplayBelowCursor)
             );
             TimeoffMenuCommand::Display(*date - Months::new(1))
         }
-        UserInput::Integer(3) => {
+        UserInput::Integer(2) => {
             print!(
                 "{}",
-                Modifier::up(10 + calendar.weeks_count() as i32 + 4)
+                Modifier::up(9 + calendar.weeks_count() as i32 + 4)
                     + Modifier::from(Clear::DisplayBelowCursor)
             );
             TimeoffMenuCommand::Display(*date + Months::new(1))

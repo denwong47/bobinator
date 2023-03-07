@@ -28,12 +28,21 @@ impl<const D: usize, const G: usize> WeekdayInterval<D, G> {
         current_week.first_day() + Duration::days(D as i64)
     }
 
-    pub fn next_in_group(group: usize) -> NaiveDate {
-        Self::this_week() + Duration::weeks(group as i64)
+    pub fn next_in_group(group: usize, start_date: Option<impl HasDate>) -> NaiveDate {
+        let coming_in_group = Self::this_week() + Duration::weeks(group as i64);
+
+        start_date
+            .map(|date| {
+                let date_diff = *date.date() - coming_in_group;
+                let weeks_to_add = (date_diff.num_days() as f64 / 7. / G as f64).ceil() as i64;
+
+                coming_in_group + Duration::weeks(weeks_to_add * G as i64)
+            })
+            .unwrap_or(coming_in_group)
     }
 
     pub fn next_week() -> NaiveDate {
-        Self::next_in_group(1)
+        Self::next_in_group(1, Option::<NaiveDate>::None)
     }
 
     /// Return the group number of a date.
@@ -44,7 +53,7 @@ impl<const D: usize, const G: usize> WeekdayInterval<D, G> {
     /// For example, for [`WeekdayInterval<4, 2>`] (Friday, fortnightly), then this
     /// Friday (whether past or future) will be group 0. Next Friday will be group 1.
     /// The Friday after will be group 0 etc.
-    pub fn get_group<T>(date: T) -> Result<usize, BobinatorError>
+    pub fn get_group<T>(date: &T) -> Result<usize, BobinatorError>
     where
         T: HasDate,
     {
@@ -74,9 +83,9 @@ impl<const D: usize, const G: usize> WeekdayInterval<D, G> {
     }
 
     /// Return an iterator of each Weekday belonging to the specified group.
-    pub fn group_iter(group: usize) -> WeekdayIntervalIter<D, G> {
+    pub fn group_iter(group: usize, start_date: Option<impl HasDate>) -> WeekdayIntervalIter<D, G> {
         WeekdayIntervalIter::<D, G> {
-            date: Self::next_in_group(group),
+            date: Self::next_in_group(group, start_date),
         }
     }
 }

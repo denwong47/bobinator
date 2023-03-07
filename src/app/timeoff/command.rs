@@ -23,7 +23,7 @@ use conch::StringWrapper;
 /// Internal enum for the return value of [`timeoff_menu_for_month`].
 #[derive(Debug, PartialEq)]
 pub(crate) enum TimeoffMenuCommand {
-    BookFridaysOff(NaiveDate, usize),
+    BookFridaysOff(NaiveDate, Option<usize>),
     Display(NaiveDate),
     Exit,
 }
