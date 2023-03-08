@@ -9,6 +9,15 @@ pub trait CalendarMonthShiftModifier<T>
 where
     T: HasDate,
 {
+    /// Return the [`Modifier`] that shifts the cursor to the end of line belong to week
+    /// `n`.
+    ///
+    /// This assumes that the current cursor is at the new line immediately after
+    /// printing the calendar.
+    ///
+    /// If the [`CalendarMonth`] instance does not have an `n`th line, return [`None`].
+    fn week_modifier(&self, n: u32) -> Option<Modifier>;
+
     /// Return the [`Modifier`] that shifts the cursor to the end of line belonging to
     /// `obj`.
     ///
@@ -26,6 +35,15 @@ where
     fn shifted_input_for<F>(&self, obj: &T, f: F) -> Option<UserInput>
     where
         F: FnOnce() -> UserInput;
+
+    /// Assuming we are at the new line immediately after printing the calendar, shift
+    /// the cursor to the `n`th week and print out `text`.
+    ///
+    /// If `obj` is not in the [`CalendarMonth`] instance, return [`None`].
+    fn shift_print_on_week(&self, n: u32, text: &str) -> Option<()> {
+        self.week_modifier(n)
+            .map(|modifier| print!("{}", modifier.wraps(text)))
+    }
 
     /// Assuming we are at the new line immediately after printing the calendar, shift
     /// the cursor to the line belonging to `obj` and print out `text`.
@@ -57,13 +75,28 @@ where
     T: HasDate,
     Region: RegionMarker,
 {
+    /// Return the [`Modifier`] that shifts the cursor to the end of line belong to week
+    /// `n`.
+    ///
+    /// This assumes that the current cursor is at the new line immediately after
+    /// printing the calendar.
+    ///
+    /// If the [`CalendarMonth`] instance does not have an `n`th line, return [`None`].
+    fn week_modifier(&self, n: u32) -> Option<Modifier> {
+        if n < self.weeks_count() {
+            Some(
+                Modifier::up((self.weeks_count() - n) as i32) + Modifier::right(CALENDAR_WIDTH + 3),
+            )
+        } else {
+            None
+        }
+    }
+
     fn shift_modifier_for(&self, obj: &T) -> Option<Modifier> {
         let date = obj.date();
 
-        self.week_number_of(date).map(|week_num| {
-            Modifier::up((self.weeks_count() - week_num) as i32)
-                + Modifier::right(CALENDAR_WIDTH + 3)
-        })
+        self.week_number_of(date)
+            .and_then(|week_num| CalendarMonthShiftModifier::<T>::week_modifier(self, week_num))
     }
 
     /// Trigger a [`UserInput`] prompt at the shifted location for this date.
