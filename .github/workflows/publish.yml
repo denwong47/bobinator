@@ -1,4 +1,4 @@
-name: Github Pages
+name: Publish Artifacts
 
 on:
   # the 1st condition
@@ -14,7 +14,7 @@ env:
 
 jobs:
   linux:
-    name: Rust project - publish binary
+    name: Linux binary
     # the 2nd condition
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
@@ -39,6 +39,7 @@ jobs:
           path: target/x86_64-unknown-linux-gnu/release/bobinator
 
   windows:
+    name: Windows binary
     runs-on: windows-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     strategy:
@@ -59,4 +60,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bobinator_x86_64-pc-windows-msvc
-          path: target/x86_64-pc-windows-msvc/release/bobinator
+          path: target/x86_64-pc-windows-msvc/release/bobinator.exe
