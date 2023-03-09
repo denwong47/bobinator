@@ -26,6 +26,7 @@ fn prompt_text(prompt: impl ToString) -> io::Result<String> {
 #[derive(Clone, Debug, PartialEq)]
 pub enum UserInput {
     Integer(u64),
+    Char(char),
     Text(String),
     Password(String),
     Choice(bool),
@@ -78,6 +79,52 @@ impl UserInput {
                         consts::MODIFIER_WARNING.wraps("Wrong input:"),
                         (conch::Modifier::colour("BrightWhite").unwrap()).wraps("number expected.")
                     )
+                }
+            } else {
+                println!(
+                    "{}: {}",
+                    consts::MODIFIER_EMPHASIS.wraps("I/O Error"),
+                    (conch::Modifier::colour("BrightWhite").unwrap())
+                        .wraps(&result.unwrap_or_else(|err| err.to_string()))
+                )
+            }
+        }
+
+        Self::RetriesExceeded
+    }
+
+    /// Prompt for a number input.
+    pub fn for_char(
+        prompt: impl ToString,
+        valid: &str,
+        default: Option<char>,
+        attempts: usize,
+        exit_prompt: char,
+    ) -> Self {
+        for _ in 0..attempts {
+            let result = prompt_text(prompt.to_string());
+            if let Ok(input) = result {
+                match input.chars().next().or(default) {
+                    Some(chr) if chr == exit_prompt => return Self::Exit,
+                    Some(chr)
+                        if valid
+                            .to_ascii_lowercase()
+                            .contains(chr.to_ascii_lowercase()) =>
+                    {
+                        return Self::Char(chr)
+                    }
+                    Some(chr) => println!(
+                        "{}: {} {} {} {}",
+                        consts::MODIFIER_WARNING.wraps("Wrong input:"),
+                        consts::MODIFIER_EMPHASIS.wraps(&chr.to_string()),
+                        (conch::Modifier::colour("BrightWhite").unwrap())
+                            .wraps("is not a valid command; expected one of ["),
+                        consts::MODIFIER_EMPHASIS.wraps(&valid.to_string()),
+                        (conch::Modifier::colour("BrightWhite").unwrap()).wraps("]."),
+                    ),
+                    // We have already used our default value; this is only used if no
+                    // default is supplied, but the user inputted nothing.
+                    None => (),
                 }
             } else {
                 println!(
