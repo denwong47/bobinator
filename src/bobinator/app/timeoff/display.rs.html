@@ -75,6 +75,27 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
 </pre><pre class="rust"><code><span class="kw">use </span>reqwest::Client;
 
 <span class="kw">use </span>chrono::{Months, NaiveDate};
@@ -82,8 +103,8 @@
 
 <span class="kw">use </span><span class="kw">super</span>::command::TimeoffMenuCommand;
 <span class="kw">use crate</span>::{
-    consts, flush_stdout, ApprovalState, BobinatorError, CalendarMonthShiftModifier, LoginSession,
-    Timeoff, UserInput,
+    consts, flush_stdout, ApprovalState, BobinatorError, CalendarMonthShiftModifier, HasDate,
+    LoginSession, Timeoff, UserInput,
 };
 
 <span class="attr">#[allow(unused_variables)]
@@ -97,35 +118,56 @@
 <span class="kw">where
     </span>Region: RegionMarker,
 {
+    (<span class="number">0</span>..calendar.weeks_count()).into_iter().for_each(|n| {});
+
     timeoffs
         .iter()
-        .filter(
-            <span class="comment">// Remove any timeoffs that had been rejected or canceled
-            </span>|timeoff| {
-                timeoff.status == ApprovalState::Approved
-                    || timeoff.status == ApprovalState::Pending
+        .filter(|timeoff| {
+            [ApprovalState::Approved, ApprovalState::Pending].contains(<span class="kw-2">&amp;</span>timeoff.status)
+        })
+        .fold(
+            [<span class="macro">vec!</span>[], <span class="macro">vec!</span>[], <span class="macro">vec!</span>[], <span class="macro">vec!</span>[], <span class="macro">vec!</span>[]],
+            |<span class="kw-2">mut </span>weeks, timeoff| {
+                calendar.week_number_of(<span class="kw-2">&amp;</span>timeoff.date()).and_then(|n| {
+                    weeks[n <span class="kw">as </span>usize].push(timeoff.to_string());
+
+                    <span class="prelude-val">Some</span>(())
+                });
+
+                weeks
             },
         )
-        .for_each(|timeoff| {
-            calendar.shifted_print_for(timeoff, <span class="kw-2">&amp;</span>timeoff.to_string());
+        .into_iter()
+        .enumerate()
+        .for_each(|(n, timeoff_descs)| {
+            <span class="kw">let </span>week_desc = timeoff_descs
+                .into_iter()
+                .reduce(|lhs, rhs| lhs + <span class="string">&quot; &quot; </span>+ <span class="kw-2">&amp;</span>rhs)
+                .unwrap_or_default();
+
+            CalendarMonthShiftModifier::&lt;NaiveDate&gt;::shift_print_on_week(
+                calendar,
+                n <span class="kw">as </span>u32,
+                (Modifier::from(Clear::LineAfterCursor).to_string() + <span class="kw-2">&amp;</span>week_desc).as_str(),
+            );
         });
 
     <span class="kw">let </span>lines = consts::STANDARD_LINES
         .clone()
         .title(<span class="string">&quot;What would you like to do?&quot;</span>)
         .extend(<span class="macro">vec!</span>[
-            <span class="string">&quot;0: Book friday offs&quot;</span>,
-            <span class="string">&quot;1: Previous Month&quot;</span>,
-            <span class="string">&quot;2: Next Month&quot;</span>,
+            <span class="string">&quot;f: Book friday offs&quot;</span>,
+            <span class="string">&quot;&lt;: Previous Month&quot;</span>,
+            <span class="string">&quot;&gt;: Next Month&quot;</span>,
             <span class="string">&quot;q: Exit&quot;</span>,
         ]);
 
     flush_stdout();
     <span class="macro">println!</span>(<span class="string">&quot;\n{}\n&quot;</span>, lines);
-    <span class="kw">let </span>input = UserInput::for_command(<span class="string">&quot;Enter Command: [0-2, q] &quot;</span>, <span class="number">0</span>..<span class="number">3</span>, <span class="number">1</span>, <span class="string">&#39;q&#39;</span>);
+    <span class="kw">let </span>input = UserInput::for_char(<span class="string">&quot;Enter Command: [f, &lt;, &gt;, q] &quot;</span>, <span class="string">&quot;f&lt;&gt;,.&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&#39;&gt;&#39;</span>), <span class="number">1</span>, <span class="string">&#39;q&#39;</span>);
 
     <span class="prelude-val">Ok</span>(<span class="kw">match </span>input {
-        UserInput::Integer(<span class="number">0</span>) =&gt; {
+        UserInput::Char(<span class="string">&#39;f&#39;</span>) =&gt; {
             <span class="macro">print!</span>(
                 <span class="string">&quot;{}&quot;</span>,
                 Modifier::up(<span class="number">9 </span>+ calendar.weeks_count() <span class="kw">as </span>i32 + <span class="number">4</span>)
@@ -133,7 +175,7 @@
             );
             TimeoffMenuCommand::BookFridaysOff(<span class="kw-2">*</span>date, <span class="prelude-val">None</span>)
         }
-        UserInput::Integer(<span class="number">1</span>) =&gt; {
+        UserInput::Char(<span class="string">&#39;&lt;&#39;</span>) | UserInput::Char(<span class="string">&#39;,&#39;</span>) =&gt; {
             <span class="macro">print!</span>(
                 <span class="string">&quot;{}&quot;</span>,
                 Modifier::up(<span class="number">9 </span>+ calendar.weeks_count() <span class="kw">as </span>i32 + <span class="number">4</span>)
@@ -141,7 +183,7 @@
             );
             TimeoffMenuCommand::Display(<span class="kw-2">*</span>date - Months::new(<span class="number">1</span>))
         }
-        UserInput::Integer(<span class="number">2</span>) =&gt; {
+        UserInput::Char(<span class="string">&#39;&gt;&#39;</span>) | UserInput::Char(<span class="string">&#39;.&#39;</span>) =&gt; {
             <span class="macro">print!</span>(
                 <span class="string">&quot;{}&quot;</span>,
                 Modifier::up(<span class="number">9 </span>+ calendar.weeks_count() <span class="kw">as </span>i32 + <span class="number">4</span>)

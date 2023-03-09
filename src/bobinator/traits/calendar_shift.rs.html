@@ -99,6 +99,39 @@
 <a href="#99" id="99">99</a>
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
 </pre><pre class="rust"><code><span class="kw">use </span>conch::{CalendarMonth, Clear, Modifier, RegionMarker, StringWrapper};
 
 <span class="kw">use crate</span>::{common, flush_stdout, HasDate, UserInput};
@@ -110,6 +143,15 @@
 <span class="kw">where
     </span>T: HasDate,
 {
+    <span class="doccomment">/// Return the [`Modifier`] that shifts the cursor to the end of line belong to week
+    /// `n`.
+    ///
+    /// This assumes that the current cursor is at the new line immediately after
+    /// printing the calendar.
+    ///
+    /// If the [`CalendarMonth`] instance does not have an `n`th line, return [`None`].
+    </span><span class="kw">fn </span>week_modifier(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u32) -&gt; <span class="prelude-ty">Option</span>&lt;Modifier&gt;;
+
     <span class="doccomment">/// Return the [`Modifier`] that shifts the cursor to the end of line belonging to
     /// `obj`.
     ///
@@ -127,6 +169,15 @@
     </span><span class="kw">fn </span>shifted_input_for&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, obj: <span class="kw-2">&amp;</span>T, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;UserInput&gt;
     <span class="kw">where
         </span>F: FnOnce() -&gt; UserInput;
+
+    <span class="doccomment">/// Assuming we are at the new line immediately after printing the calendar, shift
+    /// the cursor to the `n`th week and print out `text`.
+    ///
+    /// If `obj` is not in the [`CalendarMonth`] instance, return [`None`].
+    </span><span class="kw">fn </span>shift_print_on_week(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u32, text: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
+        <span class="self">self</span>.week_modifier(n)
+            .map(|modifier| <span class="macro">print!</span>(<span class="string">&quot;{}&quot;</span>, modifier.wraps(text)))
+    }
 
     <span class="doccomment">/// Assuming we are at the new line immediately after printing the calendar, shift
     /// the cursor to the line belonging to `obj` and print out `text`.
@@ -158,13 +209,28 @@
     </span>T: HasDate,
     Region: RegionMarker,
 {
+    <span class="doccomment">/// Return the [`Modifier`] that shifts the cursor to the end of line belong to week
+    /// `n`.
+    ///
+    /// This assumes that the current cursor is at the new line immediately after
+    /// printing the calendar.
+    ///
+    /// If the [`CalendarMonth`] instance does not have an `n`th line, return [`None`].
+    </span><span class="kw">fn </span>week_modifier(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u32) -&gt; <span class="prelude-ty">Option</span>&lt;Modifier&gt; {
+        <span class="kw">if </span>n &lt; <span class="self">self</span>.weeks_count() {
+            <span class="prelude-val">Some</span>(
+                Modifier::up((<span class="self">self</span>.weeks_count() - n) <span class="kw">as </span>i32) + Modifier::right(CALENDAR_WIDTH + <span class="number">3</span>),
+            )
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
     <span class="kw">fn </span>shift_modifier_for(<span class="kw-2">&amp;</span><span class="self">self</span>, obj: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Option</span>&lt;Modifier&gt; {
         <span class="kw">let </span>date = obj.date();
 
-        <span class="self">self</span>.week_number_of(date).map(|week_num| {
-            Modifier::up((<span class="self">self</span>.weeks_count() - week_num) <span class="kw">as </span>i32)
-                + Modifier::right(CALENDAR_WIDTH + <span class="number">3</span>)
-        })
+        <span class="self">self</span>.week_number_of(date)
+            .and_then(|week_num| CalendarMonthShiftModifier::&lt;T&gt;::week_modifier(<span class="self">self</span>, week_num))
     }
 
     <span class="doccomment">/// Trigger a [`UserInput`] prompt at the shifted location for this date.

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["legacy_book_fridays_off","Book friday offs in sequence."]]};
+window.SIDEBAR_ITEMS = {};
