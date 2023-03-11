@@ -1,5 +1,5 @@
 /// A "metadata" object returned by an API endpoint.
-/// ```ignore
+/// ```text
 /// {
 ///     "canBeDeleted": false,
 ///     "isRequired": false,

@@ -8,7 +8,7 @@ use crate::*;
 /// Struct for deserializing the return valu from the end point.
 ///
 /// The return value has the following structure:
-/// ```ignore
+/// ```text
 /// {
 /// 	"requests:" [
 /// 		{

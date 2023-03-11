@@ -13,7 +13,7 @@ use super::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
 ///
 /// - Wrong Weekday:
 ///
-///   ```ignore
+///   ```text
 ///   {
 ///     "validationMessages": {
 ///       "level": "ERROR",
@@ -38,7 +38,7 @@ use super::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
 ///   ```
 ///
 /// - Conflicting requests:
-///   ```ignore
+///   ```text
 ///   {
 ///     "validationMessages": {
 ///       "level": "ERROR",
@@ -66,7 +66,7 @@ use super::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
 ///   ```
 ///
 /// - Submittable request:
-///   ```ignore
+///   ```text
 ///   {
 ///     "validationMessages": {
 ///       "level": "INFO",

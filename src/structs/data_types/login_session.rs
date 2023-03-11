@@ -7,7 +7,7 @@ use conch::StringWrapper;
 use crate::*;
 /// Parse data returned from POST /api/login endpoint.
 ///
-/// ```ignore
+/// ```text
 /// {'id': '9999999999999999999',
 ///  'firstName': 'Dave',
 ///  'surname': 'Big',

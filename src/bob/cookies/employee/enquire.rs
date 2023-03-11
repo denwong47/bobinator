@@ -1,6 +1,4 @@
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
-use serde_json;
 
 use bobinator_macros::map_get_to_struct;
 use bobinator_models::{structs::BobinatorError, traits::BobJSONDeserialise};

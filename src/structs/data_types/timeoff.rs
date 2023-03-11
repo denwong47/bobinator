@@ -22,7 +22,7 @@ use crate::CanEnquireEmployee;
 ///
 /// Sample return from `api/timeoff/employees/{employee_id}/requests/{request_id}`:
 ///
-/// ```ignore
+/// ```text
 /// {
 ///     "actions": [
 ///         "editRequest",

@@ -22,7 +22,7 @@ mod work;
 pub use work::*;
 
 /// Sample Data:
-/// ```ignore
+/// ```text
 /// {
 ///     "id": "0000000000000000000"
 ///     "firstName": "John",
