@@ -49,6 +49,9 @@ pub enum BobinatorError {
     #[error("Bob returned an Unexpected Error `{0}`: {1}.")]
     BobReturnedUnexpectedError(String, String),
 
+    #[error("Bob returned an validation type that we don't expect: {0:?}")]
+    BobReturnedUnexpectedValidationType(String),
+
     #[error("API Token do not have {0:?} permissions; access denied.")]
     TokenPermissionDenied(Vec<APITokenScope>),
 

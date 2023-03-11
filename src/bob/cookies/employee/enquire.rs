@@ -8,6 +8,8 @@ use bobinator_models::traits::BobJSONDeserialise;
 use crate::LoginSession;
 
 /// Placeholder struct to receive response from Employee endpoint.
+///
+/// This should NOT be `LoginSession`, but a new class of `Employee`. This does NOT work currently.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct EmployeeSummaryResponse {
     pub metadata: serde_json::Value,

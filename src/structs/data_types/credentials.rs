@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// A set of login credentials to send to the server.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Credentials {
     // Private fields
     email: String,
