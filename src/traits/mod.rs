@@ -9,5 +9,8 @@ pub use has_date::*;
 mod has_date_range;
 pub use has_date_range::*;
 
+mod has_employee_id;
+pub use has_employee_id::*;
+
 mod has_token;
 pub use has_token::*;

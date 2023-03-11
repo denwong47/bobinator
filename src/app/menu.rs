@@ -3,6 +3,8 @@ use reqwest::Client;
 
 use conch;
 
+use chrono::{offset::Local, Duration};
+
 use crate::common::*;
 use crate::*;
 
@@ -19,7 +21,7 @@ pub async fn menu(conn: &Client, session: &LoginSession) -> Result<(), Bobinator
     loop {
         println!("\n{}", MENU_PROMPT.to_string());
 
-        match UserInput::for_command(PROMPT_FOR_COMMAND.as_str(), 0..1, usize::MAX, 'q').and_then(
+        match UserInput::for_command(PROMPT_FOR_COMMAND.as_str(), 0..2, usize::MAX, 'q').and_then(
             |input| {
                 println!("");
                 input
@@ -27,14 +29,17 @@ pub async fn menu(conn: &Client, session: &LoginSession) -> Result<(), Bobinator
         ) {
             // UserInput::Integer(0) => app::timeoff::legacy_book_fridays_off(conn, session).await?,
             UserInput::Integer(0) => app::timeoff::timeoff_dashboard(conn, session).await?,
-            // UserInput::Integer(2) => {
-            //     println!(
-            //         "{}",
-            //         consts::MODIFIER_WARNING
-            //             .wraps("I told you, this does nothing.\nWhat do you expect?")
-            //             + "\n\nTry something else."
-            //     );
-            // }
+            UserInput::Integer(1) => {
+                let off_today = bob::cookies::timeoff::absentees_on(
+                    conn,
+                    Local::now().date_naive() + Duration::days(3),
+                )
+                .await?;
+
+                for timeoff in off_today.iter_requests() {
+                    println!("{:?}", timeoff.employee_id.enquire_employee(conn).await)
+                }
+            }
             UserInput::Integer(command) => println!("{} requested.", command),
             UserInput::Exit => break,
             _ => {

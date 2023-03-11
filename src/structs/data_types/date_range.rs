@@ -7,19 +7,28 @@ use enum_index::*;
 use super::DatePortion;
 use crate::{HasDate, HasDateRange};
 
-#[derive(Debug, EnumIndex)]
+#[derive(Clone, Debug, EnumIndex)]
 #[index_type(String)]
 pub enum DateRangeType {
     #[index("days")]
     Days,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct DateRange {
+    #[serde(rename = "startDate")]
     pub start_date: NaiveDate,
+
+    #[serde(rename = "startPortion")]
     pub start_portion: DatePortion,
+
+    #[serde(rename = "endDate")]
     pub end_date: NaiveDate,
+
+    #[serde(rename = "endPortion")]
     pub end_portion: DatePortion,
+
+    #[serde(rename = "type")]
     pub kind: DateRangeType,
 }
 

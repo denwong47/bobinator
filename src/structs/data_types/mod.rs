@@ -19,6 +19,9 @@ pub use date_portion::*;
 mod date_range;
 pub use date_range::*;
 
+pub mod employee;
+pub use employee::Employee;
+
 mod fridays;
 pub use fridays::*;
 

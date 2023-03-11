@@ -3,23 +3,30 @@ use serde::{Deserialize, Serialize};
 use serde_json;
 
 use bobinator_macros::map_get_to_struct;
-use bobinator_models::traits::BobJSONDeserialise;
+use bobinator_models::{structs::BobinatorError, traits::BobJSONDeserialise};
 
-use crate::LoginSession;
+use crate::{Employee, HasEmployeeId};
 
-/// Placeholder struct to receive response from Employee endpoint.
-///
-/// This should NOT be `LoginSession`, but a new class of `Employee`. This does NOT work currently.
-#[derive(Debug, Serialize, Deserialize)]
-pub struct EmployeeSummaryResponse {
-    pub metadata: serde_json::Value,
-    pub data: LoginSession,
-}
+// /// Only used for Employee Summary endpoint, not used.
+// #[derive(Debug, Serialize, Deserialize)]
+// pub struct EmployeeSummaryResponse {
+//     pub metadata: serde_json::Value,
+//     pub data: Employee,
+// }
 
 map_get_to_struct! (
-    enquire_by_id,
+    _enquire_by_id,
     "Enquire the details of an [`Employee`] for the current logged in employee by ID.\nMust be used with cookies session.",
     "https://app.hibob.com/api/employees/{employee_id}",
     (employee_id: String),
-    bob_json() -> LoginSession
+    bob_json() -> Employee
 );
+
+pub async fn enquire(
+    conn: &Client,
+    employee: &dyn HasEmployeeId,
+) -> Result<Employee, BobinatorError> {
+    let result = _enquire_by_id(conn, employee.employee_id().to_owned());
+
+    result.await
+}

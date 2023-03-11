@@ -15,6 +15,7 @@ name = "bobinator"
 trace = ["bobinator_macros/trace", "bobinator_models/trace"]
 
 [dependencies]
+async-trait = { version = "0" }
 bobinator_models = { path = "./bobinator_models" }
 bobinator_macros = { path = "./bobinator_macros" }
 conch = { git = "https://github.com/denwong47/conch", branch = "development", features = ["calendar"] }

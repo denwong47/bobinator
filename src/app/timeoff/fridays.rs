@@ -38,8 +38,14 @@ where
                         .filter(
                             // Only check for Timeoffs that are approved or pending.
                             |timeoff| {
-                                [ApprovalState::Approved, ApprovalState::Pending]
-                                    .contains(&timeoff.status)
+                                timeoff
+                                    .status
+                                    .as_ref()
+                                    .map(|status| {
+                                        [ApprovalState::Approved, ApprovalState::Pending]
+                                            .contains(status)
+                                    })
+                                    .unwrap_or(false)
                             },
                         )
                         .contains(date)

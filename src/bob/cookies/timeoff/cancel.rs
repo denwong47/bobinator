@@ -15,12 +15,13 @@ map_get_to_struct! (
 
 /// Cancel a [`Timeoff`] request for the current logged in employee.
 /// Must be used with cookies session.
+#[allow(unused_variables)]
 pub async fn cancel(
     conn: &Client,
     session: &LoginSession,
     timeoff: &Timeoff,
 ) -> Result<(), BobinatorError> {
-    let result = _cancel_by_id(conn, session.id.clone(), timeoff.id);
+    let result = _cancel_by_id(conn, timeoff.employee_id.clone(), timeoff.id);
 
     result.await.and(Ok(()))
 }
