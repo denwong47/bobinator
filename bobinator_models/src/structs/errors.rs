@@ -7,6 +7,7 @@ use thiserror::Error;
 
 use super::APITokenScope;
 
+/// Enum class representing all the possible failure modes in Bobinator.
 #[derive(Error, Debug)]
 pub enum BobinatorError {
     #[error("Cannot create local configuration folder at {0}: {1}")]

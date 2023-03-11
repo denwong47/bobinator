@@ -3,6 +3,7 @@ use conch::StringWrapper;
 use enum_index::*;
 use std::fmt::Display;
 
+/// Approval State of any requests, such as time off.
 #[derive(Clone, Debug, EnumIndex, PartialEq)]
 #[index_type(String)]
 pub enum ApprovalState {

@@ -41,6 +41,10 @@ impl APIToken {
     }
 }
 
+/// An bare API Token with no scopes attached.
+///
+/// This is typically used when storing the token locally; scope
+/// information is not necessarily stored.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct APITokenOnly {
     pub token: String,

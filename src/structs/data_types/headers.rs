@@ -38,22 +38,37 @@ macro_rules! expand_vec_str_fields {
 }
 
 lazy_static! {
+    #[doc(hidden)]
     pub static ref DEFAULT_USER_AGENT: &'static str =
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 12.3; rv:91.0) Gecko/20100101 Firefox/91.0";
+
+    #[doc(hidden)]
     pub static ref DEFAULT_ACCEPT: Vec<String> = vec![
         String::from("application/json"),
         String::from("text/plain"),
         String::from("*/*")
     ];
+
+    #[doc(hidden)]
     pub static ref DEFAULT_ACCEPT_LANGUAGE: &'static str = "en-US,en;q=0.5";
+
+    #[doc(hidden)]
     pub static ref DEFAULT_ACCEPT_ENCODING: Vec<String> = vec![
         String::from("gzip"),
         String::from("deflate"),
         String::from("br")
     ];
+
+    #[doc(hidden)]
     pub static ref DEFAULT_REFERER: &'static str = "https://app.hibob.com/login/";
+
+    #[doc(hidden)]
     pub static ref DEFAULT_ORIGIN: &'static str = "https://app.hibob.com";
+
+    #[doc(hidden)]
     pub static ref DEFAULT_CONNECTION: &'static str = "keep-alive";
+
+    #[doc(hidden)]
     pub static ref DEFAULT_TE: &'static str = "trailers";
 }
 

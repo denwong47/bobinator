@@ -1,3 +1,8 @@
+//! Module containing all the structs and eunms relating to the
+//! [`Employee`] struct.
+//!
+//! Typically you do not need to use this module; [`Employee`] is all
+//! you will need.
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
@@ -21,6 +26,9 @@ pub use social_data::*;
 mod work;
 pub use work::*;
 
+/// Metadata about an Employee; it could be the session owner or
+/// colleagues.
+///
 /// Sample Data:
 /// ```text
 /// {

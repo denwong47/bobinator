@@ -7,6 +7,9 @@ use enum_index::*;
 use super::DatePortion;
 use crate::{HasDate, HasDateRange};
 
+/// The kind of range being used.
+///
+/// Currently only one known member exists: [`Self::Days`].
 #[derive(Clone, Debug, EnumIndex)]
 #[index_type(String)]
 pub enum DateRangeType {
@@ -14,6 +17,7 @@ pub enum DateRangeType {
     Days,
 }
 
+/// A Date Range object used commonly in time off requests.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct DateRange {
     #[serde(rename = "startDate")]

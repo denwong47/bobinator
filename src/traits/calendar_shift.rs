@@ -2,6 +2,9 @@ use conch::{CalendarMonth, Clear, Modifier, RegionMarker, StringWrapper};
 
 use crate::{common, flush_stdout, HasDate, UserInput};
 
+/// The expected width of the calender on screen.
+///
+/// An additional `3` will be added on top to space out the shifted text.
 pub const CALENDAR_WIDTH: i32 = 22;
 
 /// Trait for shifting the cursor to the line of the relevant date.
