@@ -21,7 +21,7 @@ pub async fn menu(conn: &Client, session: &LoginSession) -> Result<(), Bobinator
     loop {
         println!("\n{}", MENU_PROMPT.to_string());
 
-        match UserInput::for_command(PROMPT_FOR_COMMAND.as_str(), 0..2, usize::MAX, 'q').and_then(
+        match UserInput::for_command(PROMPT_FOR_COMMAND.as_str(), 0..1, usize::MAX, 'q').and_then(
             |input| {
                 println!("");
                 input
