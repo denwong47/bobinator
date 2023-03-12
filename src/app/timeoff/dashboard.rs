@@ -64,8 +64,8 @@ pub(crate) async fn timeoff_dashboard(
             .filter(
                 // Remove any timeoffs that had been rejected or canceled
                 |timeoff| {
-                    timeoff.status == ApprovalState::Approved
-                        || timeoff.status == ApprovalState::Pending
+                    timeoff.status == Some(ApprovalState::Approved)
+                        || timeoff.status == Some(ApprovalState::Pending)
                 },
             )
             .fold(

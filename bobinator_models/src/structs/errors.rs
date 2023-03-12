@@ -7,6 +7,7 @@ use thiserror::Error;
 
 use super::APITokenScope;
 
+/// Enum class representing all the possible failure modes in Bobinator.
 #[derive(Error, Debug)]
 pub enum BobinatorError {
     #[error("Cannot create local configuration folder at {0}: {1}")]
@@ -48,6 +49,9 @@ pub enum BobinatorError {
 
     #[error("Bob returned an Unexpected Error `{0}`: {1}.")]
     BobReturnedUnexpectedError(String, String),
+
+    #[error("Bob returned an validation type that we don't expect: {0:?}")]
+    BobReturnedUnexpectedValidationType(String),
 
     #[error("API Token do not have {0:?} permissions; access denied.")]
     TokenPermissionDenied(Vec<APITokenScope>),

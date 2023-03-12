@@ -6,16 +6,23 @@ use serde::{Deserialize, Serialize};
 
 use conch::{ContainsDate, StringWrapper};
 
-use crate::{consts, ApprovalState, DatePortion, HasDate, HasDateRange};
+use crate::{consts, ApprovalState, DatePortion, HasDate, HasDateRange, HasEmployeeId};
 
 #[allow(unused_imports)]
-use super::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
+use super::{DateRange, RequestRangeType, TimeoffPolicyType, TimeoffRequest};
+
+// For docs only
+#[allow(unused_imports)]
+use crate::CanEnquireEmployee;
 
 /// A struct representing a single timeoff received from bob.
 ///
+/// This struct is used for your own timeoffs as well as the reduced fields when
+/// querying other people's timeoffs, hence the number of optional fields.
+///
 /// Sample return from `api/timeoff/employees/{employee_id}/requests/{request_id}`:
 ///
-/// ```ignore
+/// ```text
 /// {
 ///     "actions": [
 ///         "editRequest",
@@ -95,8 +102,9 @@ use super::{RequestRangeType, TimeoffPolicyType, TimeoffRequest};
 /// }
 /// ```
 #[allow(dead_code)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Timeoff {
+    #[serde(alias = "requestId")]
     pub id: i64,
     // #[serde(rename = "latestState")]
     // pub latest_state: dict,
@@ -104,13 +112,14 @@ pub struct Timeoff {
     pub approved_by: Option<String>,
 
     #[serde(rename = "canEdit")]
-    pub can_edit: bool,
+    pub can_edit: Option<bool>,
 
-    // #[serde(rename = "dateRange")]
-    // pub date_range: dict,
+    #[serde(rename = "dateRange")]
+    pub date_range: DateRange,
+
     pub description: Option<String>,
-    // pub documents: list,
-    pub duration: i64,
+    pub documents: Option<Vec<serde_json::Value>>,
+    pub duration: Option<i64>,
 
     #[serde(rename = "durationDescription")]
     pub duration_description: Option<String>,
@@ -141,10 +150,10 @@ pub struct Timeoff {
     pub reason_code_id: Option<String>,
 
     #[serde(rename = "requestRangeType")]
-    pub request_range_type: RequestRangeType,
+    pub request_range_type: Option<RequestRangeType>,
 
     #[serde(rename = "requestedBy")]
-    pub requested_by: String,
+    pub requested_by: Option<String>,
 
     // #[serde(rename = "requestedPeriod")]
     // pub requested_period: String,
@@ -154,8 +163,8 @@ pub struct Timeoff {
     #[serde(rename = "startDatePortion")]
     pub start_date_portion: DatePortion,
     pub states: Option<String>,
-    pub status: ApprovalState,
-    pub unit: String,
+    pub status: Option<ApprovalState>,
+    pub unit: Option<String>,
 
     #[serde(default)]
     actions: Vec<String>,
@@ -171,6 +180,17 @@ impl HasDateRange for Timeoff {
     /// Return the date range it represents as a [`RangeInclusive<NaiveDate>`].
     fn date_range<'a>(&'a self) -> RangeInclusive<NaiveDate> {
         RangeInclusive::new(self.start_date, self.end_date)
+    }
+}
+
+impl HasEmployeeId for Timeoff {
+    /// Return the Employee ID of the [`Timeoff`].
+    ///
+    /// This `impl` enables auto trait implementation of
+    /// [`CanEnquireEmployee`], which allows the use of
+    /// [`CanEnquireEmployee::enquire_employee()`] on [`Timeoff`].
+    fn employee_id<'a>(&'a self) -> &'a str {
+        &self.employee_id
     }
 }
 

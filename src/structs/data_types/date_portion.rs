@@ -2,6 +2,7 @@ use std::fmt::{self, Display};
 
 use enum_index::*;
 
+/// The part of the day that the timeoff is applicable to.
 #[derive(Clone, Debug, EnumIndex, PartialEq)]
 #[index_type(String)]
 pub enum DatePortion {

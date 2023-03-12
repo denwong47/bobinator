@@ -12,6 +12,8 @@ impl HasDate for NaiveDate {
     }
 }
 
+/// A trait to allow a [`NaiveDate`] to be looked up.
+/// Returns [`Some<T>`] if found, [`None`] otherwise.
 pub trait FindDate<'a, T>
 where
     T: HasDate,

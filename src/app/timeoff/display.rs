@@ -25,7 +25,11 @@ where
     timeoffs
         .iter()
         .filter(|timeoff| {
-            [ApprovalState::Approved, ApprovalState::Pending].contains(&timeoff.status)
+            timeoff
+                .status
+                .as_ref()
+                .map(|status| [ApprovalState::Approved, ApprovalState::Pending].contains(status))
+                .unwrap_or(false)
         })
         .fold(
             [vec![], vec![], vec![], vec![], vec![]],

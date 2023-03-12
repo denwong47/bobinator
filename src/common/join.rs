@@ -1,5 +1,7 @@
 use std::iter::Iterator;
 
+/// Public trait for joining an [`Iterator`] of [`ToString`] together
+/// with separator.
 pub trait JoinString {
     fn join(&mut self, sep: &str) -> String;
 }

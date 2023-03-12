@@ -90,6 +90,7 @@ impl<const D: usize, const G: usize> WeekdayInterval<D, G> {
     }
 }
 
+/// An [`Iterator`] struct, created by [`WeekdayInterval`].
 pub struct WeekdayIntervalIter<const D: usize, const G: usize> {
     date: NaiveDate,
 }

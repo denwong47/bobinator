@@ -2,7 +2,12 @@ use reqwest;
 
 use crate::structs::{BobinatorError, Headers};
 
-pub struct Connection;
+/// A static struct that provides convenient functions to create
+/// [`reqwest::Client`] instances.
+pub struct Connection {
+    // Prevents instantiation.
+    _private: bool,
+}
 impl Connection {
     pub fn new(headers: Option<Headers>) -> Result<reqwest::Client, BobinatorError> {
         reqwest::Client::builder()

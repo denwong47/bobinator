@@ -5,7 +5,7 @@ use crate::{DatePortion, HasDate, RequestRangeType, TimeoffPolicyType};
 
 /// Construct a JSON for requesting time off.
 ///
-/// ```ignore
+/// ```text
 /// {'policyType': 'Friday Off',
 ///  'startDate': '2023-03-17',
 ///  'endDate': '2023-03-17',
