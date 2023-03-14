@@ -110,6 +110,12 @@
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Module for storing all the constants and static instances.
 </span><span class="kw">use </span>lazy_static::lazy_static;
 
@@ -138,6 +144,12 @@
     <span class="attr">#[doc(hidden)]
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>MODIFIER_WARNING: conch::Modifier =
         conch::Modifier::colour(<span class="string">&quot;BrightYellow&quot;</span>).unwrap()
+        + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()
+    ;
+
+    <span class="attr">#[doc(hidden)]
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>MODIFIER_ERROR: conch::Modifier =
+        conch::Modifier::colour(<span class="string">&quot;BrightRed&quot;</span>).unwrap()
         + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()
     ;
 

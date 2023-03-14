@@ -208,6 +208,14 @@
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
 <a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
 </pre><pre class="rust"><code><span class="kw">use </span>reqwest::Client;
 
 <span class="kw">use </span><span class="kw">super</span>::command::TimeoffMenuCommand;
@@ -344,12 +352,16 @@
             </span><span class="kw">let </span>lines = consts::STANDARD_LINES
                 .clone()
                 .title(<span class="string">&quot;Should we continue?&quot;</span>)
-                .extend(<span class="macro">vec!</span>[<span class="string">&quot;0: Book Next Month&quot;</span>, <span class="string">&quot;q: Back to Timeoff Dashboard&quot;</span>]);
+                .extend(<span class="macro">vec!</span>[
+                    <span class="string">&quot;Space: Book Next Month&quot;</span>,
+                    <span class="string">&quot;q: Back to Timeoff Dashboard&quot;</span>,
+                ]);
 
             <span class="macro">println!</span>(<span class="string">&quot;\n{}\n&quot;</span>, lines);
             common::flush_stdout();
 
-            <span class="kw">let </span>input = UserInput::for_command(<span class="string">&quot;Enter Command: [0,q] &quot;</span>, <span class="number">0</span>..<span class="number">1</span>, <span class="number">1</span>, <span class="string">&#39;q&#39;</span>);
+            <span class="kw">let </span>input = UserInput::for_char(<span class="string">&quot;Enter Command: [Space,q] &quot;</span>, <span class="string">&quot; &quot;</span>, <span class="number">1</span>, <span class="string">&#39;q&#39;</span>);
+            <span class="macro">println!</span>();
 
             <span class="macro">print!</span>(
                 <span class="string">&quot;{}&quot;</span>,
@@ -359,7 +371,7 @@
             common::flush_stdout();
 
             <span class="prelude-val">Ok</span>(<span class="kw">match </span>input {
-                UserInput::Integer(<span class="number">0</span>) =&gt; {
+                UserInput::Char(<span class="string">&#39; &#39;</span>) =&gt; {
                     TimeoffMenuCommand::BookFridaysOff(<span class="kw-2">*</span>date + Months::new(<span class="number">1</span>), <span class="prelude-val">Some</span>(group))
                 }
                 <span class="kw">_ </span>=&gt; TimeoffMenuCommand::Display(calendar.date),
@@ -385,7 +397,7 @@
 ///
 /// Returns [`None`] if the user input is invalid.
 </span><span class="kw">fn </span>friday_off_group_prompt() -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
-    <span class="kw">let </span>group = <span class="kw">match </span>UserInput::for_command(
+    <span class="kw">let </span>group = <span class="kw">match </span>UserInput::for_char(
         Modifier::from(Clear::DisplayBelowCursor).to_string()
             + <span class="string">&quot;\n&quot;
             </span>+ <span class="kw-2">&amp;</span>consts::STANDARD_LINES
@@ -403,11 +415,15 @@
                 ])
                 .to_string()
             + <span class="string">&quot;\n\nAnswer: [0-1,q] &quot;</span>,
-        <span class="number">0</span>..<span class="number">2</span>,
+        <span class="string">&quot;01&quot;</span>,
         <span class="number">1</span>,
         <span class="string">&#39;q&#39;</span>,
     ) {
-        UserInput::Integer(i) <span class="kw">if </span>i &lt;= <span class="number">1 </span>=&gt; <span class="prelude-val">Some</span>(i <span class="kw">as </span>usize),
+        UserInput::Char(i) <span class="kw">if </span><span class="string">&quot;01&quot;</span>.contains(i) =&gt; {
+            <span class="kw">let </span>group: usize = i.to_string().parse().unwrap();
+            <span class="macro">println!</span>();
+            <span class="prelude-val">Some</span>(group)
+        }
         <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
     };
 

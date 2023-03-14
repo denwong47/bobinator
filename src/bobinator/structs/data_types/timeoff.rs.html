@@ -254,6 +254,10 @@
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
 <a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::ops::RangeInclusive;
 
@@ -503,10 +507,14 @@
 
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;{} {} {}&quot;</span>,
+            <span class="string">&quot;{} {} {} {}&quot;</span>,
             <span class="self">self</span>.policy_type_display_name.modifier().wraps(<span class="string">&quot; &quot;</span>),
             consts::MODIFIER_EMPHASIS.wraps(<span class="kw-2">&amp;</span>range_description),
-            <span class="self">self</span>.policy_type_display_name.short_name()
+            <span class="self">self</span>.policy_type_display_name.short_name(),
+            <span class="self">self</span>.status
+                .as_ref()
+                .or(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>ApprovalState::default()))
+                .unwrap()
         )
     }
 }

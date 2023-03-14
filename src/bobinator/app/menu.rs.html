@@ -73,15 +73,15 @@
     <span class="kw">loop </span>{
         <span class="macro">println!</span>(<span class="string">&quot;\n{}&quot;</span>, MENU_PROMPT.to_string());
 
-        <span class="kw">match </span>UserInput::for_command(PROMPT_FOR_COMMAND.as_str(), <span class="number">0</span>..<span class="number">1</span>, usize::MAX, <span class="string">&#39;q&#39;</span>).and_then(
+        <span class="kw">match </span>UserInput::for_char(PROMPT_FOR_COMMAND.as_str(), <span class="string">&quot;01&quot;</span>, usize::MAX, <span class="string">&#39;q&#39;</span>).and_then(
             |input| {
                 <span class="macro">println!</span>(<span class="string">&quot;&quot;</span>);
                 input
             },
         ) {
             <span class="comment">// UserInput::Integer(0) =&gt; app::timeoff::legacy_book_fridays_off(conn, session).await?,
-            </span>UserInput::Integer(<span class="number">0</span>) =&gt; app::timeoff::timeoff_dashboard(conn, session).<span class="kw">await</span><span class="question-mark">?</span>,
-            UserInput::Integer(<span class="number">1</span>) =&gt; {
+            </span>UserInput::Char(<span class="string">&#39;0&#39;</span>) =&gt; app::timeoff::timeoff_dashboard(conn, session).<span class="kw">await</span><span class="question-mark">?</span>,
+            UserInput::Char(<span class="string">&#39;1&#39;</span>) =&gt; {
                 <span class="kw">let </span>off_today = bob::cookies::timeoff::absentees_on(
                     conn,
                     Local::now().date_naive() + Duration::days(<span class="number">3</span>),
@@ -92,9 +92,9 @@
                     <span class="macro">println!</span>(<span class="string">&quot;{:?}&quot;</span>, timeoff.employee_id.enquire_employee(conn).<span class="kw">await</span>)
                 }
             }
-            UserInput::Integer(command) =&gt; <span class="macro">println!</span>(<span class="string">&quot;{} requested.&quot;</span>, command),
             UserInput::Exit =&gt; <span class="kw">break</span>,
-            <span class="kw">_ </span>=&gt; {
+            i =&gt; {
+                <span class="macro">println!</span>(<span class="string">&quot;{:?}&quot;</span>, i);
                 <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Command aborted.&quot;</span>)
             }
         }

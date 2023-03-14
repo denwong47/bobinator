@@ -235,18 +235,76 @@
 <a href="#235" id="235">235</a>
 <a href="#236" id="236">236</a>
 <a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::io::{<span class="self">self</span>, Write};
 <span class="kw">use </span>std::ops::Range;
 
-<span class="kw">use </span>rpassword::prompt_password;
+<span class="kw">use </span>crossterm::event;
+<span class="kw">use </span>crossterm::terminal::{disable_raw_mode, enable_raw_mode};
+<span class="kw">use </span>rpassword::prompt_password <span class="kw">as </span>r_prompt_password;
 
 <span class="kw">use </span>conch;
-<span class="kw">use </span>conch::StringWrapper;
+<span class="kw">use </span>conch::{Clear, Modifier, StringWrapper};
 
 <span class="kw">use </span><span class="kw">super</span>::consts;
 
 <span class="doccomment">/// Prompt the user for an input in text.
-</span><span class="kw">fn </span>prompt_text(prompt: <span class="kw">impl </span>ToString) -&gt; io::Result&lt;String&gt; {
+</span><span class="kw">fn </span>prompt_text(prompt: <span class="kw-2">&amp;</span><span class="kw">impl </span>ToString) -&gt; io::Result&lt;String&gt; {
     <span class="macro">print!</span>(<span class="string">&quot;{}&quot;</span>, prompt.to_string());
 
     drop(io::stdout().flush());
@@ -259,15 +317,42 @@
         .to_owned()))
 }
 
+<span class="doccomment">/// Prompts on the TTY and then reads a password from TTY
+</span><span class="kw">pub fn </span>prompt_password(prompt: <span class="kw-2">&amp;</span><span class="kw">impl </span>ToString) -&gt; std::io::Result&lt;String&gt; {
+    r_prompt_password(prompt.to_string())
+}
+
+<span class="doccomment">/// Prompt the user for a keypress.
+</span><span class="kw">fn </span>prompt_keypress(prompt: <span class="kw-2">&amp;</span><span class="kw">impl </span>ToString) -&gt; io::Result&lt;event::KeyEvent&gt; {
+    <span class="macro">print!</span>(<span class="string">&quot;{}&quot;</span>, prompt.to_string());
+
+    drop(io::stdout().flush());
+
+    <span class="kw">let </span>result = <span class="kw">loop </span>{
+        enable_raw_mode().unwrap();
+        <span class="kw">let </span>result = event::read();
+        disable_raw_mode().unwrap();
+        <span class="kw">match </span>result {
+            <span class="prelude-val">Ok</span>(event::Event::Key(key)) =&gt; <span class="kw">break </span>result.and(<span class="prelude-val">Ok</span>(key)),
+            <span class="prelude-val">Err</span>(err) =&gt; <span class="kw">break </span><span class="prelude-val">Err</span>(err),
+            <span class="kw">_ </span>=&gt; <span class="kw">continue</span>,
+        }
+    };
+
+    result
+}
+
 <span class="doccomment">/// User Input Options.
 </span><span class="attr">#[derive(Clone, Debug, PartialEq)]
 </span><span class="kw">pub enum </span>UserInput {
     Integer(u64),
     Char(char),
+    KeyPress(event::KeyEvent),
     Text(String),
     Password(String),
     Choice(bool),
     RetriesExceeded,
+    IOError(String),
     Exit,
 }
 <span class="kw">impl </span>UserInput {
@@ -288,7 +373,7 @@
         exit_prompt: char,
     ) -&gt; <span class="self">Self </span>{
         <span class="kw">for _ in </span><span class="number">0</span>..attempts {
-            <span class="kw">let </span>result = prompt_text(prompt.to_string());
+            <span class="kw">let </span>result = prompt_text(<span class="kw-2">&amp;</span>prompt);
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
                 <span class="kw">if let </span><span class="prelude-val">Ok</span>(num) = input.parse::&lt;u64&gt;() {
                     <span class="kw">match </span>num {
@@ -330,50 +415,77 @@
         <span class="self">Self</span>::RetriesExceeded
     }
 
-    <span class="doccomment">/// Prompt for a number input.
-    </span><span class="kw">pub fn </span>for_char(
+    <span class="doccomment">/// Prompt for a Key press.
+    </span><span class="kw">pub fn </span>for_key_event(
         prompt: <span class="kw">impl </span>ToString,
-        valid: <span class="kw-2">&amp;</span>str,
-        default: <span class="prelude-ty">Option</span>&lt;char&gt;,
+        valid: <span class="kw-2">&amp;</span>[event::KeyEvent],
         attempts: usize,
-        exit_prompt: char,
     ) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>prompt: String = prompt.to_string();
+
         <span class="kw">for _ in </span><span class="number">0</span>..attempts {
-            <span class="kw">let </span>result = prompt_text(prompt.to_string());
-            <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
-                <span class="kw">match </span>input.chars().next().or(default) {
-                    <span class="prelude-val">Some</span>(chr) <span class="kw">if </span>chr == exit_prompt =&gt; <span class="kw">return </span><span class="self">Self</span>::Exit,
-                    <span class="prelude-val">Some</span>(chr)
-                        <span class="kw">if </span>valid
-                            .to_ascii_lowercase()
-                            .contains(chr.to_ascii_lowercase()) =&gt;
-                    {
-                        <span class="kw">return </span><span class="self">Self</span>::Char(chr)
-                    }
-                    <span class="prelude-val">Some</span>(chr) =&gt; <span class="macro">println!</span>(
-                        <span class="string">&quot;{}: {} {} {} {}&quot;</span>,
-                        consts::MODIFIER_WARNING.wraps(<span class="string">&quot;Wrong input:&quot;</span>),
-                        consts::MODIFIER_EMPHASIS.wraps(<span class="kw-2">&amp;</span>chr.to_string()),
-                        (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap())
-                            .wraps(<span class="string">&quot;is not a valid command; expected one of [&quot;</span>),
-                        consts::MODIFIER_EMPHASIS.wraps(<span class="kw-2">&amp;</span>valid.to_string()),
-                        (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()).wraps(<span class="string">&quot;].&quot;</span>),
-                    ),
-                    <span class="comment">// We have already used our default value; this is only used if no
-                    // default is supplied, but the user inputted nothing.
-                    </span><span class="prelude-val">None </span>=&gt; (),
-                }
-            } <span class="kw">else </span>{
-                <span class="macro">println!</span>(
-                    <span class="string">&quot;{}: {}&quot;</span>,
-                    consts::MODIFIER_EMPHASIS.wraps(<span class="string">&quot;I/O Error&quot;</span>),
-                    (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap())
-                        .wraps(<span class="kw-2">&amp;</span>result.unwrap_or_else(|err| err.to_string()))
-                )
+            <span class="kw">let </span>result = prompt_keypress(<span class="kw-2">&amp;</span>prompt);
+
+            <span class="comment">// We don&#39;t need to reprint after the first prompt.
+            </span>prompt = String::new();
+
+            <span class="kw">match </span>result {
+                <span class="comment">// Enforce Ctrl+C as exit regardless of whether it&#39;s valid or not,
+                // to prevent un-exitable scenarios.
+                </span><span class="prelude-val">Ok</span>(event::KeyEvent {
+                    code: event::KeyCode::Char(<span class="string">&#39;c&#39;</span>),
+                    modifiers: event::KeyModifiers::CONTROL,
+                    ..
+                }) =&gt; <span class="kw">return </span><span class="self">Self</span>::Exit,
+                <span class="prelude-val">Ok</span>(event) <span class="kw">if </span>valid.contains(<span class="kw-2">&amp;</span>event) =&gt; <span class="kw">return </span><span class="self">Self</span>::KeyPress(event),
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="macro">print!</span>(
+                    <span class="string">&quot;{}&quot;</span>,
+                    (Modifier::left(<span class="number">1</span>) + Modifier::from(Clear::LineAfterCursor)).wraps(
+                        <span class="kw-2">&amp;</span>(consts::MODIFIER_WARNING.wraps(<span class="string">&quot; Wrong input: &quot;</span>)
+                            + <span class="kw-2">&amp;</span>consts::MODIFIER_EMPHASIS.wraps(<span class="string">&quot;Try again.&quot;</span>))
+                    )
+                ),
+                <span class="prelude-val">Err</span>(err) =&gt; <span class="kw">return </span><span class="self">Self</span>::IOError(err.to_string()),
             }
         }
 
         <span class="self">Self</span>::RetriesExceeded
+    }
+
+    <span class="doccomment">/// Prompt for a character input.
+    </span><span class="kw">pub fn </span>for_char(
+        prompt: <span class="kw">impl </span>ToString,
+        valid: <span class="kw-2">&amp;</span>str,
+        attempts: usize,
+        exit_prompt: char,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>input = <span class="self">Self</span>::for_key_event(
+            prompt,
+            <span class="kw-2">&amp;</span>valid
+                .chars()
+                .chain([exit_prompt].into_iter())
+                .map(|chr| {
+                    event::KeyEvent::new(event::KeyCode::Char(chr), event::KeyModifiers::NONE)
+                })
+                .collect::&lt;Vec&lt;event::KeyEvent&gt;&gt;(),
+            attempts,
+        );
+
+        <span class="kw">match </span>input {
+            <span class="comment">// Valid Input
+            </span><span class="self">Self</span>::KeyPress(event::KeyEvent {
+                code: event::KeyCode::Char(chr),
+                ..
+            }) <span class="kw">if </span>valid.contains(chr) =&gt; <span class="self">Self</span>::Char(chr),
+
+            <span class="comment">// Exit Prompt
+            </span><span class="self">Self</span>::KeyPress(event::KeyEvent {
+                code: event::KeyCode::Char(chr),
+                ..
+            }) <span class="kw">if </span>chr == exit_prompt =&gt; <span class="self">Self</span>::Exit,
+
+            others =&gt; others,
+        }
     }
 
     <span class="doccomment">/// Prompt for a number input.
@@ -383,7 +495,7 @@
         attempts: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="kw">for _ in </span><span class="number">0</span>..attempts.unwrap_or(<span class="number">1</span>) {
-            <span class="kw">let </span>result = prompt_password(prompt.to_string());
+            <span class="kw">let </span>result = prompt_password(<span class="kw-2">&amp;</span>prompt);
 
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
                 <span class="kw">match </span>input.len() {
@@ -404,7 +516,7 @@
 
     <span class="doccomment">/// Prompt for text.
     </span><span class="kw">pub fn </span>for_text(prompt: <span class="kw">impl </span>ToString) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>result = prompt_text(prompt.to_string());
+        <span class="kw">let </span>result = prompt_text(<span class="kw-2">&amp;</span>prompt);
 
         <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
             <span class="kw">match </span>input.len() {
@@ -419,7 +531,7 @@
     <span class="doccomment">/// Prompt for email.
     </span><span class="kw">pub fn </span>for_email(prompt: <span class="kw">impl </span>ToString, attempts: usize) -&gt; <span class="self">Self </span>{
         <span class="kw">for _ in </span><span class="number">0</span>..attempts {
-            <span class="kw">let </span>result = prompt_text(prompt.to_string());
+            <span class="kw">let </span>result = prompt_text(<span class="kw-2">&amp;</span>prompt);
 
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
                 <span class="kw">if </span>consts::EMAIL_PATTERN.is_match(<span class="kw-2">&amp;</span>input) {
@@ -451,7 +563,7 @@
         exit_prompt: char,
     ) -&gt; <span class="self">Self </span>{
         <span class="kw">for _ in </span><span class="number">0</span>..attempts.unwrap_or(<span class="number">1</span>) {
-            <span class="kw">let </span>result = prompt_text(prompt.to_string());
+            <span class="kw">let </span>result = prompt_text(<span class="kw-2">&amp;</span>prompt);
 
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(input) = result {
                 <span class="kw">match </span>input.len() {
