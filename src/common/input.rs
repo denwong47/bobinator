@@ -1,15 +1,17 @@
 use std::io::{self, Write};
 use std::ops::Range;
 
-use rpassword::prompt_password;
+use crossterm::event;
+use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
+use rpassword::prompt_password as r_prompt_password;
 
 use conch;
-use conch::StringWrapper;
+use conch::{Clear, Modifier, StringWrapper};
 
 use super::consts;
 
 /// Prompt the user for an input in text.
-fn prompt_text(prompt: impl ToString) -> io::Result<String> {
+fn prompt_text(prompt: &impl ToString) -> io::Result<String> {
     print!("{}", prompt.to_string());
 
     drop(io::stdout().flush());
@@ -22,15 +24,42 @@ fn prompt_text(prompt: impl ToString) -> io::Result<String> {
         .to_owned()))
 }
 
+/// Prompts on the TTY and then reads a password from TTY
+pub fn prompt_password(prompt: &impl ToString) -> std::io::Result<String> {
+    r_prompt_password(prompt.to_string())
+}
+
+/// Prompt the user for a keypress.
+fn prompt_keypress(prompt: &impl ToString) -> io::Result<event::KeyEvent> {
+    print!("{}", prompt.to_string());
+
+    drop(io::stdout().flush());
+
+    let result = loop {
+        enable_raw_mode().unwrap();
+        let result = event::read();
+        disable_raw_mode().unwrap();
+        match result {
+            Ok(event::Event::Key(key)) => break result.and(Ok(key)),
+            Err(err) => break Err(err),
+            _ => continue,
+        }
+    };
+
+    result
+}
+
 /// User Input Options.
 #[derive(Clone, Debug, PartialEq)]
 pub enum UserInput {
     Integer(u64),
     Char(char),
+    KeyPress(event::KeyEvent),
     Text(String),
     Password(String),
     Choice(bool),
     RetriesExceeded,
+    IOError(String),
     Exit,
 }
 impl UserInput {
@@ -51,7 +80,7 @@ impl UserInput {
         exit_prompt: char,
     ) -> Self {
         for _ in 0..attempts {
-            let result = prompt_text(prompt.to_string());
+            let result = prompt_text(&prompt);
             if let Ok(input) = result {
                 if let Ok(num) = input.parse::<u64>() {
                     match num {
@@ -93,50 +122,77 @@ impl UserInput {
         Self::RetriesExceeded
     }
 
-    /// Prompt for a number input.
-    pub fn for_char(
+    /// Prompt for a Key press.
+    pub fn for_key_event(
         prompt: impl ToString,
-        valid: &str,
-        default: Option<char>,
+        valid: &[event::KeyEvent],
         attempts: usize,
-        exit_prompt: char,
     ) -> Self {
+        let mut prompt: String = prompt.to_string();
+
         for _ in 0..attempts {
-            let result = prompt_text(prompt.to_string());
-            if let Ok(input) = result {
-                match input.chars().next().or(default) {
-                    Some(chr) if chr == exit_prompt => return Self::Exit,
-                    Some(chr)
-                        if valid
-                            .to_ascii_lowercase()
-                            .contains(chr.to_ascii_lowercase()) =>
-                    {
-                        return Self::Char(chr)
-                    }
-                    Some(chr) => println!(
-                        "{}: {} {} {} {}",
-                        consts::MODIFIER_WARNING.wraps("Wrong input:"),
-                        consts::MODIFIER_EMPHASIS.wraps(&chr.to_string()),
-                        (conch::Modifier::colour("BrightWhite").unwrap())
-                            .wraps("is not a valid command; expected one of ["),
-                        consts::MODIFIER_EMPHASIS.wraps(&valid.to_string()),
-                        (conch::Modifier::colour("BrightWhite").unwrap()).wraps("]."),
-                    ),
-                    // We have already used our default value; this is only used if no
-                    // default is supplied, but the user inputted nothing.
-                    None => (),
-                }
-            } else {
-                println!(
-                    "{}: {}",
-                    consts::MODIFIER_EMPHASIS.wraps("I/O Error"),
-                    (conch::Modifier::colour("BrightWhite").unwrap())
-                        .wraps(&result.unwrap_or_else(|err| err.to_string()))
-                )
+            let result = prompt_keypress(&prompt);
+
+            // We don't need to reprint after the first prompt.
+            prompt = String::new();
+
+            match result {
+                // Enforce Ctrl+C as exit regardless of whether it's valid or not,
+                // to prevent un-exitable scenarios.
+                Ok(event::KeyEvent {
+                    code: event::KeyCode::Char('c'),
+                    modifiers: event::KeyModifiers::CONTROL,
+                    ..
+                }) => return Self::Exit,
+                Ok(event) if valid.contains(&event) => return Self::KeyPress(event),
+                Ok(_) => print!(
+                    "{}",
+                    (Modifier::left(1) + Modifier::from(Clear::LineAfterCursor)).wraps(
+                        &(consts::MODIFIER_WARNING.wraps(" Wrong input: ")
+                            + &consts::MODIFIER_EMPHASIS.wraps("Try again."))
+                    )
+                ),
+                Err(err) => return Self::IOError(err.to_string()),
             }
         }
 
         Self::RetriesExceeded
+    }
+
+    /// Prompt for a character input.
+    pub fn for_char(
+        prompt: impl ToString,
+        valid: &str,
+        attempts: usize,
+        exit_prompt: char,
+    ) -> Self {
+        let input = Self::for_key_event(
+            prompt,
+            &valid
+                .chars()
+                .chain([exit_prompt].into_iter())
+                .map(|chr| {
+                    event::KeyEvent::new(event::KeyCode::Char(chr), event::KeyModifiers::NONE)
+                })
+                .collect::<Vec<event::KeyEvent>>(),
+            attempts,
+        );
+
+        match input {
+            // Valid Input
+            Self::KeyPress(event::KeyEvent {
+                code: event::KeyCode::Char(chr),
+                ..
+            }) if valid.contains(chr) => Self::Char(chr),
+
+            // Exit Prompt
+            Self::KeyPress(event::KeyEvent {
+                code: event::KeyCode::Char(chr),
+                ..
+            }) if chr == exit_prompt => Self::Exit,
+
+            others => others,
+        }
     }
 
     /// Prompt for a number input.
@@ -146,7 +202,7 @@ impl UserInput {
         attempts: Option<usize>,
     ) -> Self {
         for _ in 0..attempts.unwrap_or(1) {
-            let result = prompt_password(prompt.to_string());
+            let result = prompt_password(&prompt);
 
             if let Ok(input) = result {
                 match input.len() {
@@ -167,7 +223,7 @@ impl UserInput {
 
     /// Prompt for text.
     pub fn for_text(prompt: impl ToString) -> Self {
-        let result = prompt_text(prompt.to_string());
+        let result = prompt_text(&prompt);
 
         if let Ok(input) = result {
             match input.len() {
@@ -182,7 +238,7 @@ impl UserInput {
     /// Prompt for email.
     pub fn for_email(prompt: impl ToString, attempts: usize) -> Self {
         for _ in 0..attempts {
-            let result = prompt_text(prompt.to_string());
+            let result = prompt_text(&prompt);
 
             if let Ok(input) = result {
                 if consts::EMAIL_PATTERN.is_match(&input) {
@@ -214,7 +270,7 @@ impl UserInput {
         exit_prompt: char,
     ) -> Self {
         for _ in 0..attempts.unwrap_or(1) {
-            let result = prompt_text(prompt.to_string());
+            let result = prompt_text(&prompt);
 
             if let Ok(input) = result {
                 match input.len() {

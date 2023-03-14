@@ -134,12 +134,16 @@ where
             let lines = consts::STANDARD_LINES
                 .clone()
                 .title("Should we continue?")
-                .extend(vec!["0: Book Next Month", "q: Back to Timeoff Dashboard"]);
+                .extend(vec![
+                    "Space: Book Next Month",
+                    "q: Back to Timeoff Dashboard",
+                ]);
 
             println!("\n{}\n", lines);
             common::flush_stdout();
 
-            let input = UserInput::for_command("Enter Command: [0,q] ", 0..1, 1, 'q');
+            let input = UserInput::for_char("Enter Command: [Space,q] ", " ", 1, 'q');
+            println!();
 
             print!(
                 "{}",
@@ -149,7 +153,7 @@ where
             common::flush_stdout();
 
             Ok(match input {
-                UserInput::Integer(0) => {
+                UserInput::Char(' ') => {
                     TimeoffMenuCommand::BookFridaysOff(*date + Months::new(1), Some(group))
                 }
                 _ => TimeoffMenuCommand::Display(calendar.date),
@@ -175,7 +179,7 @@ where
 ///
 /// Returns [`None`] if the user input is invalid.
 fn friday_off_group_prompt() -> Option<usize> {
-    let group = match UserInput::for_command(
+    let group = match UserInput::for_char(
         Modifier::from(Clear::DisplayBelowCursor).to_string()
             + "\n"
             + &consts::STANDARD_LINES
@@ -193,11 +197,15 @@ fn friday_off_group_prompt() -> Option<usize> {
                 ])
                 .to_string()
             + "\n\nAnswer: [0-1,q] ",
-        0..2,
+        "01",
         1,
         'q',
     ) {
-        UserInput::Integer(i) if i <= 1 => Some(i as usize),
+        UserInput::Char(i) if "01".contains(i) => {
+            let group: usize = i.to_string().parse().unwrap();
+            println!();
+            Some(group)
+        }
         _ => None,
     };
 

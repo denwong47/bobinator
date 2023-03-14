@@ -21,15 +21,15 @@ pub async fn menu(conn: &Client, session: &LoginSession) -> Result<(), Bobinator
     loop {
         println!("\n{}", MENU_PROMPT.to_string());
 
-        match UserInput::for_command(PROMPT_FOR_COMMAND.as_str(), 0..1, usize::MAX, 'q').and_then(
+        match UserInput::for_char(PROMPT_FOR_COMMAND.as_str(), "01", usize::MAX, 'q').and_then(
             |input| {
                 println!("");
                 input
             },
         ) {
             // UserInput::Integer(0) => app::timeoff::legacy_book_fridays_off(conn, session).await?,
-            UserInput::Integer(0) => app::timeoff::timeoff_dashboard(conn, session).await?,
-            UserInput::Integer(1) => {
+            UserInput::Char('0') => app::timeoff::timeoff_dashboard(conn, session).await?,
+            UserInput::Char('1') => {
                 let off_today = bob::cookies::timeoff::absentees_on(
                     conn,
                     Local::now().date_naive() + Duration::days(3),
@@ -40,9 +40,9 @@ pub async fn menu(conn: &Client, session: &LoginSession) -> Result<(), Bobinator
                     println!("{:?}", timeoff.employee_id.enquire_employee(conn).await)
                 }
             }
-            UserInput::Integer(command) => println!("{} requested.", command),
             UserInput::Exit => break,
-            _ => {
+            i => {
+                println!("{:?}", i);
                 println!("{}", "Command aborted.")
             }
         }
