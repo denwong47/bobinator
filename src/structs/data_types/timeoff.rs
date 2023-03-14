@@ -247,10 +247,14 @@ impl fmt::Display for Timeoff {
 
         write!(
             f,
-            "{} {} {}",
+            "{} {} {} {}",
             self.policy_type_display_name.modifier().wraps(" "),
             consts::MODIFIER_EMPHASIS.wraps(&range_description),
-            self.policy_type_display_name.short_name()
+            self.policy_type_display_name.short_name(),
+            self.status
+                .as_ref()
+                .or(Some(&ApprovalState::default()))
+                .unwrap()
         )
     }
 }
