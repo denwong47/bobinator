@@ -2,12 +2,15 @@ use reqwest::Client;
 
 use chrono::{Months, NaiveDate};
 use conch::{CalendarMonth, Clear, Modifier, RegionMarker};
+use crossterm::event;
 
 use super::command::TimeoffMenuCommand;
 use crate::{
     consts, flush_stdout, ApprovalState, BobinatorError, CalendarMonthShiftModifier, HasDate,
     LoginSession, Timeoff, UserInput,
 };
+
+const UP_AFTER_INPUT: i32 = 8;
 
 #[allow(unused_variables)]
 pub(crate) async fn display_timeoffs<Region>(
@@ -70,33 +73,124 @@ where
 
     flush_stdout();
     println!("\n{}\n", lines);
-    let input = UserInput::for_char("Enter Command: [f, <, >, q] ", "f<>,.", Some('>'), 1, 'q');
+    let input = UserInput::for_key_event(
+        "Enter Command: [f, <, >, q] ",
+        &[
+            // Friday Off
+            event::KeyEvent::new(event::KeyCode::Char('f'), event::KeyModifiers::NONE),
+            // Previous Month
+            event::KeyEvent::new(event::KeyCode::Char('<'), event::KeyModifiers::NONE),
+            event::KeyEvent::new(event::KeyCode::Char(','), event::KeyModifiers::NONE),
+            event::KeyEvent::new(event::KeyCode::Left, event::KeyModifiers::NONE),
+            // Next Month
+            event::KeyEvent::new(event::KeyCode::Char('>'), event::KeyModifiers::NONE),
+            event::KeyEvent::new(event::KeyCode::Char('.'), event::KeyModifiers::NONE),
+            event::KeyEvent::new(event::KeyCode::Right, event::KeyModifiers::NONE),
+            // Previous Year
+            event::KeyEvent::new(event::KeyCode::Left, event::KeyModifiers::SHIFT),
+            // Next Year
+            event::KeyEvent::new(event::KeyCode::Right, event::KeyModifiers::SHIFT),
+            // Exit
+            event::KeyEvent::new(event::KeyCode::Char('q'), event::KeyModifiers::NONE),
+        ],
+        1024, // sufficiently large where normal people won't run into it but if you hold a button you are guaranteed to exit.
+    );
 
     Ok(match input {
-        UserInput::Char('f') => {
+        // Friday Off
+        UserInput::KeyPress(event::KeyEvent {
+            code: event::KeyCode::Char('f'),
+            modifiers: event::KeyModifiers::NONE,
+            ..
+        }) => {
             print!(
                 "{}",
-                Modifier::up(9 + calendar.weeks_count() as i32 + 4)
+                Modifier::up(UP_AFTER_INPUT + calendar.weeks_count() as i32 + 4)
                     + Modifier::from(Clear::DisplayBelowCursor)
             );
             TimeoffMenuCommand::BookFridaysOff(*date, None)
         }
-        UserInput::Char('<') | UserInput::Char(',') => {
+
+        // Previous Month
+        UserInput::KeyPress(event::KeyEvent {
+            code: event::KeyCode::Char('<'),
+            modifiers: event::KeyModifiers::NONE,
+            ..
+        })
+        | UserInput::KeyPress(event::KeyEvent {
+            code: event::KeyCode::Char(','),
+            modifiers: event::KeyModifiers::NONE,
+            ..
+        })
+        | UserInput::KeyPress(event::KeyEvent {
+            code: event::KeyCode::Left,
+            modifiers: event::KeyModifiers::NONE,
+            ..
+        }) => {
             print!(
                 "{}",
-                Modifier::up(9 + calendar.weeks_count() as i32 + 4)
+                Modifier::up(UP_AFTER_INPUT + calendar.weeks_count() as i32 + 4)
                     + Modifier::from(Clear::DisplayBelowCursor)
             );
             TimeoffMenuCommand::Display(*date - Months::new(1))
         }
-        UserInput::Char('>') | UserInput::Char('.') => {
+
+        // Next Month
+        UserInput::KeyPress(event::KeyEvent {
+            code: event::KeyCode::Char('>'),
+            modifiers: event::KeyModifiers::NONE,
+            ..
+        })
+        | UserInput::KeyPress(event::KeyEvent {
+            code: event::KeyCode::Char('.'),
+            modifiers: event::KeyModifiers::NONE,
+            ..
+        })
+        | UserInput::KeyPress(event::KeyEvent {
+            code: event::KeyCode::Right,
+            modifiers: event::KeyModifiers::NONE,
+            ..
+        }) => {
             print!(
                 "{}",
-                Modifier::up(9 + calendar.weeks_count() as i32 + 4)
+                Modifier::up(UP_AFTER_INPUT + calendar.weeks_count() as i32 + 4)
                     + Modifier::from(Clear::DisplayBelowCursor)
             );
             TimeoffMenuCommand::Display(*date + Months::new(1))
         }
-        _ => TimeoffMenuCommand::Exit,
+
+        // Previous Year
+        UserInput::KeyPress(event::KeyEvent {
+            code: event::KeyCode::Left,
+            modifiers: event::KeyModifiers::SHIFT,
+            ..
+        }) => {
+            print!(
+                "{}",
+                Modifier::up(UP_AFTER_INPUT + calendar.weeks_count() as i32 + 4)
+                    + Modifier::from(Clear::DisplayBelowCursor)
+            );
+            TimeoffMenuCommand::Display(*date - Months::new(12))
+        }
+
+        // Next Year
+        UserInput::KeyPress(event::KeyEvent {
+            code: event::KeyCode::Right,
+            modifiers: event::KeyModifiers::SHIFT,
+            ..
+        }) => {
+            print!(
+                "{}",
+                Modifier::up(UP_AFTER_INPUT + calendar.weeks_count() as i32 + 4)
+                    + Modifier::from(Clear::DisplayBelowCursor)
+            );
+            TimeoffMenuCommand::Display(*date + Months::new(12))
+        }
+
+        // Exit
+        _ => {
+            println!();
+            TimeoffMenuCommand::Exit
+        }
     })
 }

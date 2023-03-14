@@ -30,6 +30,12 @@ lazy_static! {
     ;
 
     #[doc(hidden)]
+    pub static ref MODIFIER_ERROR: conch::Modifier =
+        conch::Modifier::colour("BrightRed").unwrap()
+        + conch::Modifier::intensity("Bold").unwrap()
+    ;
+
+    #[doc(hidden)]
     pub static ref BOBINATOR_NAME: String = s!(
         ((conch::Modifier::colour("BrightRed").unwrap()
         + conch::Modifier::intensity("Bold").unwrap()).wraps("bob"))
