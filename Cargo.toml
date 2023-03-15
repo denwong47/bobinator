@@ -23,6 +23,7 @@ chrono = { version = "0", features = ["serde"] }
 crossterm = { version = "0" }
 directories = { version = "4" }
 enum_index = { git = "https://github.com/denwong47/enum_index", branch = "development" }
+futures = { version = "0" }
 lazy_static = "1"
 num-traits = { version = "0" }
 rayon = "1"
