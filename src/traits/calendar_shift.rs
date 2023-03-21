@@ -1,4 +1,6 @@
-use conch::{CalendarMonth, Clear, Modifier, RegionMarker, StringWrapper};
+use conch::{
+    CalendarMonth, Clear, ContainsDate, DisplayCalendarDay, Modifier, RegionMarker, StringWrapper,
+};
 
 use crate::{common, flush_stdout, HasDate, UserInput};
 
@@ -11,6 +13,7 @@ pub const CALENDAR_WIDTH: i32 = 22;
 pub trait CalendarMonthShiftModifier<T>
 where
     T: HasDate,
+    Self: ContainsDate,
 {
     /// Return the [`Modifier`] that shifts the cursor to the end of line belong to week
     /// `n`.
@@ -71,6 +74,10 @@ where
             flush_stdout()
         })
     }
+
+    /// Reprint a day of an existing calendar to stdout, without redoing
+    /// the whole calendar.
+    fn refresh_day(&self, obj: &T) -> Option<()>;
 }
 
 impl<T, Region> CalendarMonthShiftModifier<T> for CalendarMonth<Region>
@@ -133,5 +140,21 @@ where
 
             result
         })
+    }
+
+    /// Re-draw the specified date on the calendar.
+    fn refresh_day(&self, obj: &T) -> Option<()> {
+        {
+            let date = obj.date();
+
+            date.calendar_col_row_of(self).map(|(col, row)| {
+                let modifier = Modifier::up((self.weeks_count() - row) as i32)
+                    + Modifier::right((col * 3) as i32);
+
+                print!("{}", modifier.wraps(&date.to_display_on_calendar(self)));
+
+                flush_stdout();
+            })
+        }
     }
 }
