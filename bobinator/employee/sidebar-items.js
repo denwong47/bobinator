@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["About","About Object for Employee struct."],["Communication","Communication Object for Personal struct."],["Employee","Metadata about an Employee; it could be the session owner or colleagues."],["EmployeeProxy","Work Object for Employee struct."],["Personal","Personal Object for Employee struct."],["SocialData","Communication Object for Personal struct."],["Work","Work Object for Employee struct."]]};
+window.SIDEBAR_ITEMS = {"struct":["About","Communication","Employee","EmployeeProxy","Personal","SocialData","Work"]};

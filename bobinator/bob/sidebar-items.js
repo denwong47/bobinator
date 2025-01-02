@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["api_token","API calls to bob using official API token."],["cookies","API calls to bob using username/password authentication, followed by cookie session."]]};
+window.SIDEBAR_ITEMS = {"mod":["api_token","cookies"]};

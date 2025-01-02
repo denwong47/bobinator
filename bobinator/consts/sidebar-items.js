@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["PROMPT_FOR_ONE_TIME_TOKEN_FETCH","Not currently being used - our personal API tokens do NOT work with Webhooks."]]};
+window.SIDEBAR_ITEMS = {"struct":["PROMPT_FOR_ONE_TIME_TOKEN_FETCH"]};

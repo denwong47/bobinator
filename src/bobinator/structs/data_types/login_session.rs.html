@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/structs/data_types/login_session.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>login_session.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-93196c7a1c3542a8.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../../static.files/light-4743e13df3dfe8c4.css"><link rel="stylesheet" disabled href="../../../../static.files/dark-0e1b889528bd466b.css"><link rel="stylesheet" disabled href="../../../../static.files/ayu-65289d5d067c7c66.css"><script id="default-settings" ></script><script src="../../../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../../../static.files/source-script-ea63cb6500f71309.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-3367e395607fafc1.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../bobinator/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-5ec35bf9ca753509.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/structs/data_types/login_session.rs`."><title>login_session.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="bobinator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0 (90b35a623 2024-11-26)" data-channel="1.83.0" data-search-js="search-f0d225181b97f9a4.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-f070b9041d14864c.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">bobinator/structs/data_types/</div>login_session.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
+<a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -94,8 +95,7 @@
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
-<a href="#97" id="97">97</a>
-</pre><pre class="rust"><code><span class="attr">#[allow(unused_imports)]
+<a href="#97" id="97">97</a></pre></div><pre class="rust"><code><span class="attr">#[allow(unused_imports)]
 </span><span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">use </span>conch;
@@ -105,56 +105,56 @@
 <span class="doccomment">/// Parse data returned from POST /api/login endpoint.
 ///
 /// ```text
-/// {&#39;id&#39;: &#39;9999999999999999999&#39;,
-///  &#39;firstName&#39;: &#39;Dave&#39;,
-///  &#39;surname&#39;: &#39;Big&#39;,
-///  &#39;lastName&#39;: &#39;Big&#39;,
-///  &#39;email&#39;: &#39;dave@big.com&#39;,
-///  &#39;site&#39;: &#39;London&#39;,
-///  &#39;siteId&#39;: 1234567,
-///  &#39;avatar&#39;: &#39;https://images.hibob.com/default-avatars/BD_19.png&#39;,
-///  &#39;role&#39;: 2,
-///  &#39;companyId&#39;: 7654321,
-///  &#39;companyName&#39;: &#39;Dave Unlimited&#39;,
-///  &#39;isManager&#39;: False,
-///  &#39;reportees&#39;: [],
-///  &#39;allReportees&#39;: [],
-///  &#39;displayName&#39;: &#39;Big Dave&#39;,
-///  &#39;mockedRole&#39;: False,
-///  &#39;sessionType&#39;: &#39;employee&#39;,
-///  &#39;state&#39;: &#39;active&#39;,
-///  &#39;isLoggedInIntoSandbox&#39;: False}
+/// {'id': '9999999999999999999',
+///  'firstName': 'Dave',
+///  'surname': 'Big',
+///  'lastName': 'Big',
+///  'email': 'dave@big.com',
+///  'site': 'London',
+///  'siteId': 1234567,
+///  'avatar': 'https://images.hibob.com/default-avatars/BD_19.png',
+///  'role': 2,
+///  'companyId': 7654321,
+///  'companyName': 'Dave Unlimited',
+///  'isManager': False,
+///  'reportees': [],
+///  'allReportees': [],
+///  'displayName': 'Big Dave',
+///  'mockedRole': False,
+///  'sessionType': 'employee',
+///  'state': 'active',
+///  'isLoggedInIntoSandbox': False}
 /// ```
 </span><span class="attr">#[derive(Debug, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>LoginSession {
     <span class="kw">pub </span>id: String,
 
-    <span class="attr">#[serde(rename = <span class="string">&quot;firstName&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"firstName"</span>)]
     </span><span class="kw">pub </span>first_name: String,
     <span class="kw">pub </span>surname: String,
 
-    <span class="attr">#[serde(rename = <span class="string">&quot;lastName&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"lastName"</span>)]
     </span><span class="kw">pub </span>last_name: String,
     <span class="kw">pub </span>email: String,
     <span class="kw">pub </span>site: String,
 
-    <span class="attr">#[serde(rename = <span class="string">&quot;siteId&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"siteId"</span>)]
     </span><span class="kw">pub </span>site_id: i64,
     <span class="kw">pub </span>avatar: String,
     <span class="kw">pub </span>role: i64, <span class="comment">// Convert to Enum if variants known
 
-    </span><span class="attr">#[serde(rename = <span class="string">&quot;companyId&quot;</span>)]
+    </span><span class="attr">#[serde(rename = <span class="string">"companyId"</span>)]
     </span><span class="kw">pub </span>company_id: i64,
 
-    <span class="attr">#[serde(rename = <span class="string">&quot;companyName&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"companyName"</span>)]
     </span><span class="kw">pub </span>company_name: String,
     <span class="comment">// pub is_manager: bool,
     // pub reportees: Vec&lt;i64&gt;,
     // pub all_reportees: Vec&lt;i64&gt;,
-    </span><span class="attr">#[serde(rename = <span class="string">&quot;displayName&quot;</span>)]
+    </span><span class="attr">#[serde(rename = <span class="string">"displayName"</span>)]
     </span><span class="kw">pub </span>display_name: String,
     <span class="comment">// pub mocked_role: bool,
-    </span><span class="attr">#[serde(rename = <span class="string">&quot;sessionType&quot;</span>)]
+    </span><span class="attr">#[serde(rename = <span class="string">"sessionType"</span>)]
     </span><span class="kw">pub </span>session_type: String, <span class="comment">// Convert to Enum if variants known
     </span><span class="kw">pub </span>state: String, <span class="comment">// Convert to Enum if variants known
     // pub is_logged_in_into_sandbox: bool,
@@ -169,14 +169,14 @@
     <span class="comment">// Temporary function to test functionality
     </span><span class="kw">pub fn </span>greet(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="macro">println!</span>(
-            <span class="string">&quot;{} of {}, {} is now logged into {} and online.&quot;</span>,
-            (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-                + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
+            <span class="string">"{} of {}, {} is now logged into {} and online."</span>,
+            (conch::Modifier::colour(<span class="string">"BrightWhite"</span>).unwrap()
+                + conch::Modifier::intensity(<span class="string">"Bold"</span>).unwrap())
             .wraps(<span class="kw-2">&amp;</span><span class="self">self</span>.display_name),
-            (conch::Modifier::colour(<span class="string">&quot;BrightWhite&quot;</span>).unwrap()
-                + conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap())
+            (conch::Modifier::colour(<span class="string">"BrightWhite"</span>).unwrap()
+                + conch::Modifier::intensity(<span class="string">"Bold"</span>).unwrap())
             .wraps(<span class="kw-2">&amp;</span><span class="self">self</span>.company_name),
-            (conch::Modifier::intensity(<span class="string">&quot;Bold&quot;</span>).unwrap()).wraps(<span class="kw-2">&amp;</span><span class="self">self</span>.site),
+            (conch::Modifier::intensity(<span class="string">"Bold"</span>).unwrap()).wraps(<span class="kw-2">&amp;</span><span class="self">self</span>.site),
             consts::BOBINATOR_NAME.as_str(),
         );
     }
@@ -188,9 +188,8 @@
     /// This `impl` enables auto trait implementation of
     /// [`CanEnquireEmployee`], which allows the use of
     /// [`CanEnquireEmployee::enquire_employee()`] on [`LoginSession`].
-    </span><span class="kw">fn </span>employee_id&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str {
+    </span><span class="kw">fn </span>employee_id&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str {
         <span class="kw-2">&amp;</span><span class="self">self</span>.id
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="bobinator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

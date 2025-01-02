@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["ensure_config_path_exists",""]],"static":[["API_CONFIG_FOLDER","Default"],["API_TOKEN_FILE_NAME","Default file name for the API token file."]],"struct":[["API_CONFIG_PATH",""],["API_TOKEN_PATH",""]]};
+window.SIDEBAR_ITEMS = {"fn":["ensure_config_path_exists"],"static":["API_CONFIG_FOLDER","API_TOKEN_FILE_NAME"],"struct":["API_CONFIG_PATH","API_TOKEN_PATH"]};

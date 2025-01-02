@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/traits/calendar_shift.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>calendar_shift.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-93196c7a1c3542a8.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-4743e13df3dfe8c4.css"><link rel="stylesheet" disabled href="../../../static.files/dark-0e1b889528bd466b.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-65289d5d067c7c66.css"><script id="default-settings" ></script><script src="../../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../../static.files/source-script-ea63cb6500f71309.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-3367e395607fafc1.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../bobinator/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-5ec35bf9ca753509.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/traits/calendar_shift.rs`."><title>calendar_shift.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bobinator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0 (90b35a623 2024-11-26)" data-channel="1.83.0" data-search-js="search-f0d225181b97f9a4.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f070b9041d14864c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">bobinator/traits/</div>calendar_shift.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
+<a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -135,7 +136,31 @@
 <a href="#135" id="135">135</a>
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
-</pre><pre class="rust"><code><span class="kw">use </span>conch::{CalendarMonth, Clear, Modifier, RegionMarker, StringWrapper};
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a></pre></div><pre class="rust"><code><span class="kw">use </span>conch::{
+    CalendarMonth, Clear, ContainsDate, DisplayCalendarDay, Modifier, RegionMarker, StringWrapper,
+};
 
 <span class="kw">use crate</span>::{common, flush_stdout, HasDate, UserInput};
 
@@ -148,6 +173,7 @@
 </span><span class="kw">pub trait </span>CalendarMonthShiftModifier&lt;T&gt;
 <span class="kw">where
     </span>T: HasDate,
+    <span class="self">Self</span>: ContainsDate,
 {
     <span class="doccomment">/// Return the [`Modifier`] that shifts the cursor to the end of line belong to week
     /// `n`.
@@ -182,7 +208,7 @@
     /// If `obj` is not in the [`CalendarMonth`] instance, return [`None`].
     </span><span class="kw">fn </span>shift_print_on_week(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u32, text: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
         <span class="self">self</span>.week_modifier(n)
-            .map(|modifier| <span class="macro">print!</span>(<span class="string">&quot;{}&quot;</span>, modifier.wraps(text)))
+            .map(|modifier| <span class="macro">print!</span>(<span class="string">"{}"</span>, modifier.wraps(text)))
     }
 
     <span class="doccomment">/// Assuming we are at the new line immediately after printing the calendar, shift
@@ -191,7 +217,7 @@
     /// If `obj` is not in the [`CalendarMonth`] instance, return [`None`].
     </span><span class="kw">fn </span>shifted_print_for(<span class="kw-2">&amp;</span><span class="self">self</span>, obj: <span class="kw-2">&amp;</span>T, text: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
         <span class="self">self</span>.shift_modifier_for(obj)
-            .map(|modifier| <span class="macro">print!</span>(<span class="string">&quot;{}&quot;</span>, modifier.wraps(text)))
+            .map(|modifier| <span class="macro">print!</span>(<span class="string">"{}"</span>, modifier.wraps(text)))
     }
 
     <span class="doccomment">/// Overwrite all characters on the line belonging to `obj`.
@@ -204,10 +230,14 @@
             Modifier::from(Clear::LineAfterCursor).to_string().as_str(),
         )
         .map(|<span class="kw">_</span>| {
-            <span class="comment">// Don&#39;t use `and` here because `and` is eagerly evaluated.
+            <span class="comment">// Don't use `and` here because `and` is eagerly evaluated.
             </span>flush_stdout()
         })
     }
+
+    <span class="doccomment">/// Reprint a day of an existing calendar to stdout, without redoing
+    /// the whole calendar.
+    </span><span class="kw">fn </span>refresh_day(<span class="kw-2">&amp;</span><span class="self">self</span>, obj: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt;;
 }
 
 <span class="kw">impl</span>&lt;T, Region&gt; CalendarMonthShiftModifier&lt;T&gt; <span class="kw">for </span>CalendarMonth&lt;Region&gt;
@@ -251,7 +281,7 @@
 
         <span class="self">self</span>.week_number_of(date).map(|week_num| {
             <span class="macro">print!</span>(
-                <span class="string">&quot;{}&quot;</span>,
+                <span class="string">"{}"</span>,
                 Modifier::up((<span class="self">self</span>.weeks_count() - week_num) <span class="kw">as </span>i32)
                     + Modifier::right(CALENDAR_WIDTH + <span class="number">3</span>)
             );
@@ -264,13 +294,28 @@
             // - one less line to move downwards, and
             // - no need to carriage return.
             </span><span class="macro">print!</span>(
-                <span class="string">&quot;{}&quot;</span>,
+                <span class="string">"{}"</span>,
                 Modifier::down((<span class="self">self</span>.weeks_count() - week_num - <span class="number">1</span>) <span class="kw">as </span>i32)
             );
 
             result
         })
     }
+
+    <span class="doccomment">/// Re-draw the specified date on the calendar.
+    </span><span class="kw">fn </span>refresh_day(<span class="kw-2">&amp;</span><span class="self">self</span>, obj: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
+        {
+            <span class="kw">let </span>date = obj.date();
+
+            date.calendar_col_row_of(<span class="self">self</span>).map(|(col, row)| {
+                <span class="kw">let </span>modifier = Modifier::up((<span class="self">self</span>.weeks_count() - row) <span class="kw">as </span>i32)
+                    + Modifier::right((col * <span class="number">3</span>) <span class="kw">as </span>i32);
+
+                <span class="macro">print!</span>(<span class="string">"{}"</span>, modifier.wraps(<span class="kw-2">&amp;</span>date.to_display_on_calendar(<span class="self">self</span>)));
+
+                flush_stdout();
+            })
+        }
+    }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bobinator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

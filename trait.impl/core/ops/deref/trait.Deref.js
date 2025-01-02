@@ -1,0 +1,9 @@
+(function() {
+    var implementors = Object.fromEntries([["bobinator",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.83.0/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"bobinator/app/config/struct.API_CONFIG_PATH.html\" title=\"struct bobinator::app::config::API_CONFIG_PATH\">API_CONFIG_PATH</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.83.0/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"bobinator/app/config/struct.API_TOKEN_PATH.html\" title=\"struct bobinator::app::config::API_TOKEN_PATH\">API_TOKEN_PATH</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.83.0/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"bobinator/app/struct.MENU_PROMPT.html\" title=\"struct bobinator::app::MENU_PROMPT\">MENU_PROMPT</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.83.0/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"bobinator/app/struct.PROMPT_FOR_COMMAND.html\" title=\"struct bobinator::app::PROMPT_FOR_COMMAND\">PROMPT_FOR_COMMAND</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.83.0/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"bobinator/consts/struct.PROMPT_FOR_ONE_TIME_TOKEN_FETCH.html\" title=\"struct bobinator::consts::PROMPT_FOR_ONE_TIME_TOKEN_FETCH\">PROMPT_FOR_ONE_TIME_TOKEN_FETCH</a>"]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[1573]}
