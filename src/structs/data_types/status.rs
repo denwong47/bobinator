@@ -18,10 +18,13 @@ pub enum ApprovalState {
 
     #[index("canceled")]
     Canceled,
+
+    #[index("not known")]
+    NotKnown,
 }
 impl Default for ApprovalState {
     fn default() -> Self {
-        Self::Pending
+        Self::NotKnown
     }
 }
 impl Display for ApprovalState {
@@ -43,6 +46,7 @@ impl Display for ApprovalState {
                 conch::Modifier::background("Grayscale13").unwrap()
                     + conch::Modifier::colour("Grayscale02").unwrap()
             }
+            Self::NotKnown => return Ok(()),
         };
 
         write!(f, "{}", wrapper.wraps(&format!("{:^10}", &self.index())))

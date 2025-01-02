@@ -1,4 +1,5 @@
 use conch::StringWrapper;
+use std::sync::Arc;
 
 use crate::common::consts;
 use crate::{bob, Connection};
@@ -25,11 +26,12 @@ pub async fn run() -> Result<(), BobinatorError> {
     // // Construct the Client.
     // let conn = Connection::new(Some(headers))?;
 
-    let conn = Connection::new(None)?;
+    let conn = Arc::new(Connection::new(None)?);
+
     println!("{}", consts::PROMPT_FOR_PASSWORD_LOGIN.to_string());
     let session = try_login(&conn).await?;
 
-    let result = menu(&conn, &session).await;
+    let result = menu(Arc::clone(&conn), &session).await;
 
     println!(
         "{}",

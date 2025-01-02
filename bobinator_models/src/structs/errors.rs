@@ -4,6 +4,7 @@ use chrono::NaiveDate;
 #[allow(unused_imports)]
 use reqwest::{Response, StatusCode};
 use thiserror::Error;
+use tokio::task::JoinError;
 
 use super::APITokenScope;
 
@@ -64,4 +65,7 @@ pub enum BobinatorError {
 
     #[error("Cannot request Friday off on {0} as it is not a Friday.")]
     FridayOffOnNonFriday(NaiveDate),
+
+    #[error("Failed to join handle after asynchronous operation: {0:?}")]
+    AsyncJoinError(JoinError),
 }

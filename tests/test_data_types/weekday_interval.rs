@@ -31,27 +31,27 @@ mod test_friday_off {
 
     // TODO Re write these tests to make it usable.
 
-    // test_factory!(this_week, this_week(), {
-    //     let today = Local::now().date_naive();
+    test_factory!(this_week, this_week(), {
+        let today = Local::now().date_naive();
 
-    //     today
-    //         .week(today.weekday())
-    //         .days()
-    //         .into_iter_by_duration(Duration::days(1))
-    //         .find(|date| date.weekday() == Weekday::Fri)
-    //         .unwrap()
-    // },);
+        today
+            .week(Weekday::Mon)
+            .days()
+            .into_iter_by_duration(Duration::days(1))
+            .find(|date| date.weekday() == Weekday::Fri)
+            .unwrap()
+    },);
 
-    // test_factory!(next_week, next_week(), {
-    //     let today = Local::now().date_naive();
+    test_factory!(next_week, next_week(), {
+        let today = Local::now().date_naive();
 
-    //     (today + Duration::days(7))
-    //         .week(today.weekday())
-    //         .days()
-    //         .into_iter_by_duration(Duration::days(1))
-    //         .find(|date| date.weekday() == Weekday::Fri)
-    //         .unwrap()
-    // },);
+        (today + Duration::days(7))
+            .week(Weekday::Mon)
+            .days()
+            .into_iter_by_duration(Duration::days(1))
+            .find(|date| date.weekday() == Weekday::Fri)
+            .unwrap()
+    },);
 
     // test_factory!(
     //     next_in_group_from_next_week,
@@ -60,7 +60,7 @@ mod test_friday_off {
     //         let today = Local::now().date_naive();
 
     //         today
-    //             .week(today.weekday())
+    //             .week(Weekday::Mon)
     //             .days()
     //             .into_iter_by_duration(Duration::days(1))
     //             .find(|date| date.weekday() == Weekday::Fri)
@@ -76,12 +76,18 @@ mod test_friday_off {
     //         let today = Local::now().date_naive();
 
     //         today
-    //             .week(today.weekday())
+    //             .week(Weekday::Mon)
     //             .days()
     //             .into_iter_by_duration(Duration::days(1))
     //             .find(|date| date.weekday() == Weekday::Fri)
     //             .unwrap()
-    //             + Duration::days(14)
+    //             + Duration::days(14 * {
+    //                 if Local::now().date_naive().weekday().num_days_from_monday() <= Weekday::Fri.num_days_from_monday() {
+    //                     1
+    //                 } else {
+    //                     2
+    //                 }
+    //             })
     //     },
     // );
 }
